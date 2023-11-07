@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
 /// <reference types="react" />
 import type { DOMConversionMap, DOMExportOutput, EditorConfig, LexicalEditor, LexicalNode, NodeKey, SerializedEditor, SerializedLexicalNode, Spread } from 'lexical';
 import { DecoratorNode } from 'lexical';
@@ -20,8 +27,6 @@ export declare type SerializedImageNode = Spread<{
     showCaption: boolean;
     src: string;
     width?: number;
-    type: 'image';
-    version: 1;
 }, SerializedLexicalNode>;
 export declare class ImageNode extends DecoratorNode<JSX.Element> {
     __src: string;

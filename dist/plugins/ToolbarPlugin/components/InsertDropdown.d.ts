@@ -4,7 +4,10 @@ export interface IInsertDropdownProps {
     enableYoutube?: boolean;
     enableTwitter?: boolean;
     enablePoll?: boolean;
-    enableImage?: boolean;
+    enableImage?: {
+        enable: boolean;
+        maxWidth: number;
+    };
     enableEquations?: boolean;
     enableExcalidraw?: boolean;
     enableHorizontalRule?: boolean;

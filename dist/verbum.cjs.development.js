@@ -17,25 +17,21 @@ var LexicalHorizontalRuleNode = require('@lexical/react/LexicalHorizontalRuleNod
 var richText = require('@lexical/rich-text');
 var table = require('@lexical/table');
 var lexical = require('lexical');
-var LexicalComposerContext = require('@lexical/react/LexicalComposerContext');
-var utils = require('@lexical/utils');
-var katex = _interopDefault(require('katex'));
-var useLexicalNodeSelection = require('@lexical/react/useLexicalNodeSelection');
-var excalidraw = require('@excalidraw/excalidraw');
-var ReactDOM = require('react-dom');
-var reactI18next = require('react-i18next');
 var LexicalCollaborationContext = require('@lexical/react/LexicalCollaborationContext');
+var LexicalComposerContext = require('@lexical/react/LexicalComposerContext');
 var LexicalCollaborationPlugin = require('@lexical/react/LexicalCollaborationPlugin');
 var LexicalHistoryPlugin = require('@lexical/react/LexicalHistoryPlugin');
 var LexicalNestedComposer = require('@lexical/react/LexicalNestedComposer');
 var LexicalPlainTextPlugin = require('@lexical/react/LexicalPlainTextPlugin');
 var LexicalErrorBoundary = _interopDefault(require('@lexical/react/LexicalErrorBoundary'));
+var ReactDOM = require('react-dom');
 var yWebsocket = require('y-websocket');
 var yjs = require('yjs');
 var LexicalContentEditable$1 = require('@lexical/react/LexicalContentEditable');
 var LexicalBlockWithAlignableContents = require('@lexical/react/LexicalBlockWithAlignableContents');
 var LexicalDecoratorBlockNode = require('@lexical/react/LexicalDecoratorBlockNode');
 var i18next = require('i18next');
+var reactI18next = require('react-i18next');
 var LexicalAutoFocusPlugin = require('@lexical/react/LexicalAutoFocusPlugin');
 var LexicalCheckListPlugin = require('@lexical/react/LexicalCheckListPlugin');
 var LexicalClearEditorPlugin = require('@lexical/react/LexicalClearEditorPlugin');
@@ -46,6 +42,7 @@ var LexicalRichTextPlugin = require('@lexical/react/LexicalRichTextPlugin');
 var LexicalOnChangePlugin = require('@lexical/react/LexicalOnChangePlugin');
 var file = require('@lexical/file');
 var markdown = require('@lexical/markdown');
+var utils = require('@lexical/utils');
 var yjs$1 = require('@lexical/yjs');
 var LexicalAutoLinkPlugin$1 = require('@lexical/react/LexicalAutoLinkPlugin');
 var selection = require('@lexical/selection');
@@ -53,7 +50,6 @@ require('@lexical/text');
 var useLexicalTextEntity = require('@lexical/react/useLexicalTextEntity');
 var LexicalMarkdownShortcutPlugin = require('@lexical/react/LexicalMarkdownShortcutPlugin');
 var useChild = _interopDefault(require('use-child'));
-require('katex/dist/katex.css');
 var LexicalTablePlugin = require('@lexical/react/LexicalTablePlugin');
 var LexicalTypeaheadMenuPlugin = require('@lexical/react/LexicalTypeaheadMenuPlugin');
 
@@ -193,1077 +189,6 @@ function $createEmojiNode(className, emojiText) {
  * LICENSE file in the root directory of this source tree.
  *
  */
-function EquationEditor(_ref) {
-  var {
-    equation,
-    setEquation,
-    inline,
-    inputRef
-  } = _ref;
-
-  var onChange = event => {
-    setEquation(event.target.value);
-  };
-
-  var props = {
-    equation,
-    inputRef,
-    onChange
-  };
-  return inline ? /*#__PURE__*/React.createElement(InlineEquationEditor, Object.assign({}, props, {
-    inputRef: inputRef
-  })) : /*#__PURE__*/React.createElement(BlockEquationEditor, Object.assign({}, props, {
-    inputRef: inputRef
-  }));
-}
-
-function InlineEquationEditor(_ref2) {
-  var {
-    equation,
-    onChange,
-    inputRef
-  } = _ref2;
-  return /*#__PURE__*/React.createElement("span", {
-    className: "EquationEditor_inputBackground"
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "EquationEditor_dollarSign"
-  }, "$"), /*#__PURE__*/React.createElement("input", {
-    className: "EquationEditor_inlineEditor",
-    value: equation,
-    onChange: onChange,
-    autoFocus: true,
-    ref: inputRef
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "EquationEditor_dollarSign"
-  }, "$"));
-}
-
-function BlockEquationEditor(_ref3) {
-  var {
-    equation,
-    onChange,
-    inputRef
-  } = _ref3;
-  return /*#__PURE__*/React.createElement("div", {
-    className: "EquationEditor_inputBackground"
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "EquationEditor_dollarSign"
-  }, '$$\n'), /*#__PURE__*/React.createElement("textarea", {
-    className: "EquationEditor_blockEditor",
-    value: equation,
-    onChange: onChange,
-    ref: inputRef
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "EquationEditor_dollarSign"
-  }, '\n$$'));
-}
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-function KatexRenderer(_ref) {
-  var {
-    equation,
-    inline,
-    onClick
-  } = _ref;
-  var katexElementRef = React.useRef(null);
-  React.useEffect(() => {
-    var katexElement = katexElementRef.current;
-
-    if (katexElement !== null) {
-      katex.render(equation, katexElement, {
-        displayMode: !inline,
-        errorColor: '#cc0000',
-        output: 'html',
-        strict: 'warn',
-        throwOnError: false,
-        trust: false
-      });
-    }
-  }, [equation, inline]);
-  return (
-    /*#__PURE__*/
-    // We use spacers either side to ensure Android doesn't try and compose from the
-    // inner text from Katex. There didn't seem to be any other way of making this work,
-    // without having a physical space.
-    React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
-      className: "spacer"
-    }, " "), /*#__PURE__*/React.createElement("span", {
-      role: "button",
-      tabIndex: -1,
-      onClick: onClick,
-      ref: katexElementRef
-    }), /*#__PURE__*/React.createElement("span", {
-      className: "spacer"
-    }, " "))
-  );
-}
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-function EquationComponent(_ref) {
-  var {
-    equation,
-    inline,
-    nodeKey
-  } = _ref;
-  var [editor] = LexicalComposerContext.useLexicalComposerContext();
-  var [equationValue, setEquationValue] = React.useState(equation);
-  var [showEquationEditor, setShowEquationEditor] = React.useState(false);
-  var inputRef = React.useRef(null);
-  var onHide = React.useCallback(restoreSelection => {
-    setShowEquationEditor(false);
-    editor.update(() => {
-      var node = lexical.$getNodeByKey(nodeKey);
-
-      if ($isEquationNode(node)) {
-        node.setEquation(equationValue);
-
-        if (restoreSelection) {
-          node.selectNext(0, 0);
-        }
-      }
-    });
-  }, [editor, equationValue, nodeKey]);
-  React.useEffect(() => {
-    if (showEquationEditor) {
-      return utils.mergeRegister(editor.registerCommand(lexical.SELECTION_CHANGE_COMMAND, payload => {
-        var activeElement = document.activeElement;
-        var inputElem = inputRef.current;
-
-        if (inputElem !== activeElement) {
-          onHide();
-        }
-
-        return false;
-      }, lexical.COMMAND_PRIORITY_HIGH), editor.registerCommand(lexical.KEY_ESCAPE_COMMAND, payload => {
-        var activeElement = document.activeElement;
-        var inputElem = inputRef.current;
-
-        if (inputElem === activeElement) {
-          onHide(true);
-          return true;
-        }
-
-        return false;
-      }, lexical.COMMAND_PRIORITY_HIGH));
-    }
-  }, [editor, onHide, showEquationEditor]);
-  return /*#__PURE__*/React.createElement(React.Fragment, null, showEquationEditor ? /*#__PURE__*/React.createElement(EquationEditor, {
-    equation: equationValue,
-    setEquation: setEquationValue,
-    inline: inline,
-    inputRef: inputRef
-  }) : /*#__PURE__*/React.createElement(KatexRenderer, {
-    equation: equationValue,
-    inline: inline,
-    onClick: () => {
-      setShowEquationEditor(true);
-    }
-  }));
-}
-
-class EquationNode extends lexical.DecoratorNode {
-  constructor(equation, inline, key) {
-    super(key);
-    this.__equation = equation;
-    this.__inline = inline != null ? inline : false;
-  }
-
-  static getType() {
-    return 'equation';
-  }
-
-  static clone(node) {
-    return new EquationNode(node.__equation, node.__inline, node.__key);
-  }
-
-  static importJSON(serializedNode) {
-    var node = $createEquationNode(serializedNode.equation, serializedNode.inline);
-    return node;
-  }
-
-  exportJSON() {
-    return {
-      equation: this.getEquation(),
-      inline: this.__inline,
-      type: 'equation',
-      version: 1
-    };
-  }
-
-  createDOM(_config) {
-    return document.createElement(this.__inline ? 'span' : 'div');
-  }
-
-  updateDOM(prevNode) {
-    // If the inline property changes, replace the element
-    return this.__inline !== prevNode.__inline;
-  }
-
-  getEquation() {
-    return this.__equation;
-  }
-
-  setEquation(equation) {
-    var writable = this.getWritable();
-    writable.__equation = equation;
-  }
-
-  decorate() {
-    return /*#__PURE__*/React.createElement(EquationComponent, {
-      equation: this.__equation,
-      inline: this.__inline,
-      nodeKey: this.__key
-    });
-  }
-
-}
-function $createEquationNode(equation, inline) {
-  if (equation === void 0) {
-    equation = '';
-  }
-
-  if (inline === void 0) {
-    inline = false;
-  }
-
-  var equationNode = new EquationNode(equation, inline);
-  return equationNode;
-}
-function $isEquationNode(node) {
-  return node instanceof EquationNode;
-}
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
-}
-
-var Direction = {
-  east: 1 << 0,
-  north: 1 << 3,
-  south: 1 << 1,
-  west: 1 << 2
-};
-function ImageResizer(_ref) {
-  var {
-    onResizeStart,
-    onResizeEnd,
-    imageRef,
-    maxWidth,
-    editor,
-    showCaption,
-    setShowCaption
-  } = _ref;
-  var buttonRef = React.useRef(null);
-  var positioningRef = React.useRef({
-    currentHeight: 0,
-    currentWidth: 0,
-    direction: 0,
-    isResizing: false,
-    ratio: 0,
-    startHeight: 0,
-    startWidth: 0,
-    startX: 0,
-    startY: 0
-  });
-  var editorRootElement = editor.getRootElement(); // Find max width, accounting for editor padding.
-
-  var maxWidthContainer = maxWidth ? maxWidth : editorRootElement !== null ? editorRootElement.getBoundingClientRect().width - 20 : 100;
-  var maxHeightContainer = editorRootElement !== null ? editorRootElement.getBoundingClientRect().height - 20 : 100;
-  var minWidth = 100;
-  var minHeight = 100;
-
-  var setStartCursor = direction => {
-    var ew = direction === Direction.east || direction === Direction.west;
-    var ns = direction === Direction.north || direction === Direction.south;
-    var nwse = direction & Direction.north && direction & Direction.west || direction & Direction.south && direction & Direction.east;
-    var cursorDir = ew ? 'ew' : ns ? 'ns' : nwse ? 'nwse' : 'nesw';
-
-    if (editorRootElement !== null) {
-      editorRootElement.style.setProperty('cursor', cursorDir + "-resize", 'important');
-    }
-
-    if (document.body !== null) {
-      document.body.style.setProperty('cursor', cursorDir + "-resize", 'important');
-    }
-  };
-
-  var setEndCursor = () => {
-    if (editorRootElement !== null) {
-      editorRootElement.style.setProperty('cursor', 'default');
-    }
-
-    if (document.body !== null) {
-      document.body.style.setProperty('cursor', 'default');
-    }
-  };
-
-  var handlePointerDown = (event, direction) => {
-    var image = imageRef.current;
-
-    if (image !== null) {
-      var {
-        width,
-        height
-      } = image.getBoundingClientRect();
-      var positioning = positioningRef.current;
-      positioning.startWidth = width;
-      positioning.startHeight = height;
-      positioning.ratio = width / height;
-      positioning.currentWidth = width;
-      positioning.currentHeight = height;
-      positioning.startX = event.clientX;
-      positioning.startY = event.clientY;
-      positioning.isResizing = true;
-      positioning.direction = direction;
-      setStartCursor(direction);
-      onResizeStart();
-      image.style.height = height + "px";
-      image.style.width = width + "px";
-      document.addEventListener('pointermove', handlePointerMove);
-      document.addEventListener('pointerup', handlePointerUp);
-    }
-  };
-
-  var handlePointerMove = event => {
-    var image = imageRef.current;
-    var positioning = positioningRef.current;
-    var isHorizontal = positioning.direction & (Direction.east | Direction.west);
-    var isVertical = positioning.direction & (Direction.south | Direction.north);
-
-    if (image !== null && positioning.isResizing) {
-      // Corner cursor
-      if (isHorizontal && isVertical) {
-        var diff = Math.floor(positioning.startX - event.clientX);
-        diff = positioning.direction & Direction.east ? -diff : diff;
-        var width = clamp(positioning.startWidth + diff, minWidth, maxWidthContainer);
-        var height = width / positioning.ratio;
-        image.style.width = width + "px";
-        image.style.height = height + "px";
-        positioning.currentHeight = height;
-        positioning.currentWidth = width;
-      } else if (isVertical) {
-        var _diff = Math.floor(positioning.startY - event.clientY);
-
-        _diff = positioning.direction & Direction.south ? -_diff : _diff;
-
-        var _height = clamp(positioning.startHeight + _diff, minHeight, maxHeightContainer);
-
-        image.style.height = _height + "px";
-        positioning.currentHeight = _height;
-      } else {
-        var _diff2 = Math.floor(positioning.startX - event.clientX);
-
-        _diff2 = positioning.direction & Direction.east ? -_diff2 : _diff2;
-
-        var _width = clamp(positioning.startWidth + _diff2, minWidth, maxWidthContainer);
-
-        image.style.width = _width + "px";
-        positioning.currentWidth = _width;
-      }
-    }
-  };
-
-  var handlePointerUp = () => {
-    var image = imageRef.current;
-    var positioning = positioningRef.current;
-
-    if (image !== null && positioning.isResizing) {
-      var width = positioning.currentWidth;
-      var height = positioning.currentHeight;
-      positioning.startWidth = 0;
-      positioning.startHeight = 0;
-      positioning.ratio = 0;
-      positioning.startX = 0;
-      positioning.startY = 0;
-      positioning.currentWidth = 0;
-      positioning.currentHeight = 0;
-      positioning.isResizing = false;
-      setEndCursor();
-      onResizeEnd(width, height);
-      document.removeEventListener('pointermove', handlePointerMove);
-      document.removeEventListener('pointerup', handlePointerUp);
-    }
-  };
-
-  return /*#__PURE__*/React.createElement(React.Fragment, null, !showCaption && /*#__PURE__*/React.createElement("button", {
-    className: "image-caption-button",
-    ref: buttonRef,
-    onClick: () => {
-      setShowCaption(!showCaption);
-    }
-  }, "Add Caption"), /*#__PURE__*/React.createElement("div", {
-    className: "image-resizer image-resizer-n",
-    onPointerDown: event => {
-      handlePointerDown(event, Direction.north);
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "image-resizer image-resizer-ne",
-    onPointerDown: event => {
-      handlePointerDown(event, Direction.north | Direction.east);
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "image-resizer image-resizer-e",
-    onPointerDown: event => {
-      handlePointerDown(event, Direction.east);
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "image-resizer image-resizer-se",
-    onPointerDown: event => {
-      handlePointerDown(event, Direction.south | Direction.east);
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "image-resizer image-resizer-s",
-    onPointerDown: event => {
-      handlePointerDown(event, Direction.south);
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "image-resizer image-resizer-sw",
-    onPointerDown: event => {
-      handlePointerDown(event, Direction.south | Direction.west);
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "image-resizer image-resizer-w",
-    onPointerDown: event => {
-      handlePointerDown(event, Direction.west);
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "image-resizer image-resizer-nw",
-    onPointerDown: event => {
-      handlePointerDown(event, Direction.north | Direction.west);
-    }
-  }));
-}
-
-// We don't want them to be used in open source
-
-var removeStyleFromSvg_HACK = svg => {
-  var _svg$firstElementChil;
-
-  var styleTag = svg == null ? void 0 : (_svg$firstElementChil = svg.firstElementChild) == null ? void 0 : _svg$firstElementChil.firstElementChild; // Generated SVG is getting double-sized by height and width attributes
-  // We want to match the real size of the SVG element
-
-  var viewBox = svg.getAttribute('viewBox');
-
-  if (viewBox != null) {
-    var viewBoxDimentions = viewBox.split(' ');
-    svg.setAttribute('width', viewBoxDimentions[2]);
-    svg.setAttribute('height', viewBoxDimentions[3]);
-  }
-
-  if (styleTag && styleTag.tagName === 'style') {
-    styleTag.remove();
-  }
-};
-/**
- * @explorer-desc
- * A component for rendering Excalidraw elements as a static image
- */
-
-
-function ExcalidrawImage(_ref) {
-  var _Svg$outerHTML;
-
-  var {
-    elements,
-    imageContainerRef,
-    appState = null,
-    rootClassName = null
-  } = _ref;
-  var [Svg, setSvg] = React.useState(null);
-  React.useEffect(() => {
-    var setContent = /*#__PURE__*/function () {
-      var _ref2 = _asyncToGenerator(function* () {
-        var svg = yield excalidraw.exportToSvg({
-          appState,
-          elements,
-          files: null
-        });
-        removeStyleFromSvg_HACK(svg);
-        svg.setAttribute('width', '100%');
-        svg.setAttribute('height', '100%');
-        svg.setAttribute('display', 'block');
-        setSvg(svg);
-      });
-
-      return function setContent() {
-        return _ref2.apply(this, arguments);
-      };
-    }();
-
-    setContent();
-  }, [elements, appState]);
-  return /*#__PURE__*/React.createElement("div", {
-    ref: imageContainerRef,
-    className: rootClassName != null ? rootClassName : '',
-    dangerouslySetInnerHTML: {
-      __html: (_Svg$outerHTML = Svg == null ? void 0 : Svg.outerHTML) != null ? _Svg$outerHTML : ''
-    }
-  });
-}
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-function joinClasses() {
-  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-    args[_key] = arguments[_key];
-  }
-
-  return args.filter(Boolean).join(' ');
-}
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-function Button(_ref) {
-  var {
-    'data-test-id': dataTestId,
-    children,
-    className,
-    onClick,
-    disabled,
-    small,
-    title
-  } = _ref;
-  return /*#__PURE__*/React.createElement("button", Object.assign({
-    disabled: disabled,
-    className: joinClasses('Button__root', disabled && 'Button__disabled', small && 'Button__small', className),
-    onClick: onClick,
-    title: title,
-    "aria-label": title
-  }, dataTestId && {
-    'data-test-id': dataTestId
-  }), children);
-}
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-function PortalImpl(_ref) {
-  var {
-    onClose,
-    children,
-    title,
-    closeOnClickOutside
-  } = _ref;
-  var modalRef = React.useRef();
-  React.useEffect(() => {
-    if (modalRef.current !== null) {
-      modalRef.current.focus();
-    }
-  }, []);
-  React.useEffect(() => {
-    var modalOverlayElement = null;
-
-    var handler = event => {
-      if (event.keyCode === 27) {
-        onClose();
-      }
-    };
-
-    var clickOutsideHandler = event => {
-      var target = event.target;
-
-      if (modalRef.current !== null && !modalRef.current.contains(target) && closeOnClickOutside) {
-        onClose();
-      }
-    };
-
-    if (modalRef.current !== null) {
-      var _modalRef$current;
-
-      modalOverlayElement = (_modalRef$current = modalRef.current) == null ? void 0 : _modalRef$current.parentElement;
-
-      if (modalOverlayElement !== null) {
-        var _modalOverlayElement;
-
-        (_modalOverlayElement = modalOverlayElement) == null ? void 0 : _modalOverlayElement.addEventListener('click', clickOutsideHandler);
-      }
-    }
-
-    window.addEventListener('keydown', handler);
-    return () => {
-      window.removeEventListener('keydown', handler);
-
-      if (modalOverlayElement !== null) {
-        var _modalOverlayElement2;
-
-        (_modalOverlayElement2 = modalOverlayElement) == null ? void 0 : _modalOverlayElement2.removeEventListener('click', clickOutsideHandler);
-      }
-    };
-  }, [closeOnClickOutside, onClose]);
-  return /*#__PURE__*/React.createElement("div", {
-    className: "Modal__overlay",
-    role: "dialog"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "Modal__modal",
-    tabIndex: -1,
-    ref: modalRef
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "Modal__title"
-  }, title), /*#__PURE__*/React.createElement("button", {
-    className: "Modal__closeButton",
-    "aria-label": "Close modal",
-    type: "button",
-    onClick: onClose
-  }, "X"), /*#__PURE__*/React.createElement("div", {
-    className: "Modal__content"
-  }, children)));
-}
-
-function Modal(_ref2) {
-  var {
-    onClose,
-    children,
-    title,
-    closeOnClickOutside = false
-  } = _ref2;
-  return /*#__PURE__*/ReactDOM.createPortal( /*#__PURE__*/React.createElement(PortalImpl, {
-    onClose: onClose,
-    title: title,
-    closeOnClickOutside: closeOnClickOutside
-  }, children), document.body);
-}
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-/**
- * @explorer-desc
- * A component which renders a modal with Excalidraw (a painting app)
- * which can be used to export an editable image
- */
-
-function ExcalidrawModal(_ref) {
-  var {
-    closeOnClickOutside = false,
-    onSave,
-    initialElements,
-    isShown = false,
-    onHide,
-    onDelete
-  } = _ref;
-  var excalidrawRef = React.useRef(null);
-  var excaliDrawModelRef = React.useRef(null);
-  var [discardModalOpen, setDiscardModalOpen] = React.useState(false);
-  var [elements, setElements] = React.useState(initialElements);
-  var {
-    t
-  } = reactI18next.useTranslation(['action']);
-  React.useEffect(() => {
-    if (excaliDrawModelRef.current !== null) {
-      excaliDrawModelRef.current.focus();
-    }
-  }, []);
-  React.useEffect(() => {
-    var modalOverlayElement = null;
-
-    var clickOutsideHandler = event => {
-      var target = event.target;
-
-      if (excaliDrawModelRef.current !== null && !excaliDrawModelRef.current.contains(target) && closeOnClickOutside) {
-        onDelete();
-      }
-    };
-
-    if (excaliDrawModelRef.current !== null) {
-      var _excaliDrawModelRef$c;
-
-      modalOverlayElement = (_excaliDrawModelRef$c = excaliDrawModelRef.current) == null ? void 0 : _excaliDrawModelRef$c.parentElement;
-
-      if (modalOverlayElement !== null) {
-        var _modalOverlayElement;
-
-        (_modalOverlayElement = modalOverlayElement) == null ? void 0 : _modalOverlayElement.addEventListener('click', clickOutsideHandler);
-      }
-    }
-
-    return () => {
-      if (modalOverlayElement !== null) {
-        var _modalOverlayElement2;
-
-        (_modalOverlayElement2 = modalOverlayElement) == null ? void 0 : _modalOverlayElement2.removeEventListener('click', clickOutsideHandler);
-      }
-    };
-  }, [closeOnClickOutside, onDelete]);
-
-  var save = () => {
-    if (elements.filter(el => !el.isDeleted).length > 0) {
-      onSave(elements);
-    } else {
-      // delete node if the scene is clear
-      onDelete();
-    }
-
-    onHide();
-  };
-
-  var discard = () => {
-    if (elements.filter(el => !el.isDeleted).length === 0) {
-      // delete node if the scene is clear
-      onDelete();
-    } else {
-      //Otherwise, show confirmation dialog before closing
-      setDiscardModalOpen(true);
-    }
-  };
-
-  function ShowDiscardDialog() {
-    return /*#__PURE__*/React.createElement(Modal, {
-      title: t('action:Discard'),
-      onClose: () => {
-        setDiscardModalOpen(false);
-      },
-      closeOnClickOutside: true
-    }, t('action:Confirm_Discard'), /*#__PURE__*/React.createElement("div", {
-      className: "ExcalidrawModal__discardModal"
-    }, /*#__PURE__*/React.createElement(Button, {
-      onClick: () => {
-        setDiscardModalOpen(false);
-        onHide();
-      }
-    }, t('action:Discard')), ' ', /*#__PURE__*/React.createElement(Button, {
-      onClick: () => {
-        setDiscardModalOpen(false);
-      }
-    }, t('action:Cancel'))));
-  }
-
-  React.useEffect(() => {
-    var _excalidrawRef$curren;
-
-    excalidrawRef == null ? void 0 : (_excalidrawRef$curren = excalidrawRef.current) == null ? void 0 : _excalidrawRef$curren.updateScene({
-      elements: initialElements
-    });
-  }, [initialElements]);
-
-  if (isShown === false) {
-    return null;
-  }
-
-  var onChange = els => {
-    setElements(els);
-  };
-
-  return /*#__PURE__*/ReactDOM.createPortal( /*#__PURE__*/React.createElement("div", {
-    className: "ExcalidrawModal__overlay",
-    role: "dialog"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "ExcalidrawModal__modal",
-    ref: excaliDrawModelRef,
-    tabIndex: -1
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "ExcalidrawModal__row"
-  }, discardModalOpen && /*#__PURE__*/React.createElement(ShowDiscardDialog, null), /*#__PURE__*/React.createElement(excalidraw.Excalidraw, {
-    onChange: onChange,
-    initialData: {
-      appState: {
-        isLoading: false
-      },
-      elements: initialElements
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "ExcalidrawModal__actions"
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "action-button",
-    onClick: discard
-  }, t('action:Discard')), /*#__PURE__*/React.createElement("button", {
-    className: "action-button",
-    onClick: save
-  }, t('action:Save')))))), document.body);
-}
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-function ExcalidrawComponent(_ref) {
-  var {
-    nodeKey,
-    data
-  } = _ref;
-  var [editor] = LexicalComposerContext.useLexicalComposerContext();
-  var [isModalOpen, setModalOpen] = React.useState(data === '[]' && editor.isEditable());
-  var imageContainerRef = React.useRef(null);
-  var buttonRef = React.useRef(null);
-  var [isSelected, setSelected, clearSelection] = useLexicalNodeSelection.useLexicalNodeSelection(nodeKey);
-  var [isResizing, setIsResizing] = React.useState(false);
-  var onDelete = React.useCallback(payload => {
-    if (isSelected && lexical.$isNodeSelection(lexical.$getSelection())) {
-      var event = payload;
-      event.preventDefault();
-      editor.update(() => {
-        var node = lexical.$getNodeByKey(nodeKey);
-
-        if ($isExcalidrawNode(node)) {
-          node.remove();
-        }
-
-        setSelected(false);
-      });
-    }
-
-    return false;
-  }, [editor, isSelected, nodeKey, setSelected]); // Set editor to readOnly if excalidraw is open to prevent unwanted changes
-
-  React.useEffect(() => {
-    if (isModalOpen) {
-      editor.setEditable(false);
-    } else {
-      editor.setEditable(true);
-    }
-  }, [isModalOpen, editor]);
-  React.useEffect(() => {
-    return utils.mergeRegister(editor.registerCommand(lexical.CLICK_COMMAND, event => {
-      var buttonElem = buttonRef.current;
-      var eventTarget = event.target;
-
-      if (isResizing) {
-        return true;
-      }
-
-      if (buttonElem !== null && buttonElem.contains(eventTarget)) {
-        if (!event.shiftKey) {
-          clearSelection();
-        }
-
-        setSelected(!isSelected);
-
-        if (event.detail > 1) {
-          setModalOpen(true);
-        }
-
-        return true;
-      }
-
-      return false;
-    }, lexical.COMMAND_PRIORITY_LOW), editor.registerCommand(lexical.KEY_DELETE_COMMAND, onDelete, lexical.COMMAND_PRIORITY_LOW), editor.registerCommand(lexical.KEY_BACKSPACE_COMMAND, onDelete, lexical.COMMAND_PRIORITY_LOW));
-  }, [clearSelection, editor, isSelected, isResizing, onDelete, setSelected]);
-  var deleteNode = React.useCallback(() => {
-    setModalOpen(false);
-    editor.update(() => {
-      var node = lexical.$getNodeByKey(nodeKey);
-
-      if ($isExcalidrawNode(node)) {
-        node.remove();
-      }
-    });
-    return true;
-  }, [editor, nodeKey]);
-
-  var setData = newData => {
-    if (!editor.isEditable()) {
-      return;
-    }
-
-    return editor.update(() => {
-      var node = lexical.$getNodeByKey(nodeKey);
-
-      if ($isExcalidrawNode(node)) {
-        if (newData.length > 0) {
-          node.setData(JSON.stringify(newData));
-        } else {
-          node.remove();
-        }
-      }
-    });
-  };
-
-  var onResizeStart = () => {
-    setIsResizing(true);
-  };
-
-  var onResizeEnd = (nextWidth, nextHeight) => {
-    // Delay hiding the resize bars for click case
-    setTimeout(() => {
-      setIsResizing(false);
-    }, 200);
-  };
-
-  var elements = React.useMemo(() => JSON.parse(data), [data]);
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(ExcalidrawModal, {
-    initialElements: elements,
-    isShown: isModalOpen,
-    onDelete: deleteNode,
-    onHide: () => {
-      editor.setEditable(true);
-      setModalOpen(false);
-    },
-    onSave: newData => {
-      editor.setEditable(true);
-      setData(newData);
-      setModalOpen(false);
-    },
-    closeOnClickOutside: true
-  }), elements.length > 0 && /*#__PURE__*/React.createElement("button", {
-    ref: buttonRef,
-    className: "excalidraw-button " + (isSelected ? 'selected' : '')
-  }, /*#__PURE__*/React.createElement(ExcalidrawImage, {
-    imageContainerRef: imageContainerRef,
-    className: "image",
-    elements: elements
-  }), (isSelected || isResizing) && /*#__PURE__*/React.createElement(ImageResizer, {
-    showCaption: true,
-    setShowCaption: () => null,
-    imageRef: imageContainerRef,
-    editor: editor,
-    onResizeStart: onResizeStart,
-    onResizeEnd: onResizeEnd
-  })));
-}
-
-function convertExcalidrawElement(domNode) {
-  var excalidrawData = domNode.getAttribute('data-lexical-excalidraw-json');
-
-  if (excalidrawData) {
-    var node = $createExcalidrawNode();
-    node.__data = excalidrawData;
-    return {
-      node
-    };
-  }
-
-  return null;
-}
-
-class ExcalidrawNode extends lexical.DecoratorNode {
-  constructor(data, key) {
-    if (data === void 0) {
-      data = '[]';
-    }
-
-    super(key);
-    this.__data = data;
-  }
-
-  static getType() {
-    return 'excalidraw';
-  }
-
-  static clone(node) {
-    return new ExcalidrawNode(node.__data, node.__key);
-  }
-
-  static importJSON(serializedNode) {
-    return new ExcalidrawNode(serializedNode.data);
-  }
-
-  exportJSON() {
-    return {
-      data: this.__data,
-      type: 'excalidraw',
-      version: 1
-    };
-  } // View
-
-
-  createDOM(config) {
-    var span = document.createElement('span');
-    var theme = config.theme;
-    var className = theme.image;
-
-    if (className !== undefined) {
-      span.className = className;
-    }
-
-    return span;
-  }
-
-  updateDOM() {
-    return false;
-  }
-
-  static importDOM() {
-    return {
-      span: domNode => {
-        if (!domNode.hasAttribute('data-lexical-excalidraw-json')) {
-          return null;
-        }
-
-        return {
-          conversion: convertExcalidrawElement,
-          priority: 1
-        };
-      }
-    };
-  }
-
-  exportDOM(editor) {
-    var element = document.createElement('span');
-    var content = editor.getElementByKey(this.getKey());
-
-    if (content !== null) {
-      element.innerHTML = content.querySelector('svg').outerHTML;
-    }
-
-    element.setAttribute('data-lexical-excalidraw-json', this.__data);
-    return {
-      element
-    };
-  }
-
-  setData(data) {
-    var self = this.getWritable();
-    self.__data = data;
-  }
-
-  decorate(editor) {
-    return /*#__PURE__*/React.createElement(ExcalidrawComponent, {
-      nodeKey: this.getKey(),
-      data: this.__data
-    });
-  }
-
-}
-function $createExcalidrawNode() {
-  return new ExcalidrawNode();
-}
-function $isExcalidrawNode(node) {
-  return node instanceof ExcalidrawNode;
-}
-
 var ImageComponent = /*#__PURE__*/React.lazy( // @ts-ignore
 () => Promise.resolve().then(function () { return ImageComponent$2; }));
 
@@ -1271,11 +196,15 @@ function convertImageElement(domNode) {
   if (domNode instanceof HTMLImageElement) {
     var {
       alt: altText,
-      src
+      src,
+      width,
+      height
     } = domNode;
     var node = $createImageNode({
       altText,
-      src
+      height,
+      src,
+      width
     });
     return {
       node
@@ -1338,6 +267,8 @@ class ImageNode extends lexical.DecoratorNode {
     var element = document.createElement('img');
     element.setAttribute('src', this.__src);
     element.setAttribute('alt', this.__altText);
+    element.setAttribute('width', this.__width.toString());
+    element.setAttribute('height', this.__height.toString());
     return {
       element
     };
@@ -1432,7 +363,7 @@ function $createImageNode(_ref) {
     caption,
     key
   } = _ref;
-  return new ImageNode(src, altText, maxWidth, width, height, showCaption, caption, captionsEnabled, key);
+  return lexical.$applyNodeReplacement(new ImageNode(src, altText, maxWidth, width, height, showCaption, caption, captionsEnabled, key));
 }
 function $isImageNode(node) {
   return node instanceof ImageNode;
@@ -1536,6 +467,49 @@ function $createMentionNode(mentionName) {
   var mentionNode = new MentionNode(mentionName);
   mentionNode.setMode('segmented').toggleDirectionless();
   return mentionNode;
+}
+
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+function joinClasses() {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  return args.filter(Boolean).join(' ');
+}
+
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+function Button(_ref) {
+  var {
+    'data-test-id': dataTestId,
+    children,
+    className,
+    onClick,
+    disabled,
+    small,
+    title
+  } = _ref;
+  return /*#__PURE__*/React.createElement("button", Object.assign({
+    disabled: disabled,
+    className: joinClasses('Button__root', disabled && 'Button__disabled', small && 'Button__small', className),
+    onClick: onClick,
+    title: title,
+    "aria-label": title
+  }, dataTestId && {
+    'data-test-id': dataTestId
+  }), children);
 }
 
 /**
@@ -2588,7 +1562,7 @@ function $createYouTubeNode(videoID) {
  * LICENSE file in the root directory of this source tree.
  *
  */
-var PlaygroundNodes = [richText.HeadingNode, list.ListNode, list.ListItemNode, richText.QuoteNode, code.CodeNode, table.TableNode, table.TableCellNode, table.TableRowNode, hashtag.HashtagNode, code.CodeHighlightNode, link.AutoLinkNode, link.LinkNode, overflow.OverflowNode, PollNode, StickyNode, ImageNode, MentionNode, EmojiNode, ExcalidrawNode, EquationNode, TypeaheadNode, KeywordNode, LexicalHorizontalRuleNode.HorizontalRuleNode, TweetNode, YouTubeNode, mark.MarkNode];
+var PlaygroundNodes = [richText.HeadingNode, list.ListNode, list.ListItemNode, richText.QuoteNode, code.CodeNode, table.TableNode, table.TableCellNode, table.TableRowNode, hashtag.HashtagNode, code.CodeHighlightNode, link.AutoLinkNode, link.LinkNode, overflow.OverflowNode, PollNode, StickyNode, ImageNode, MentionNode, EmojiNode, TypeaheadNode, KeywordNode, LexicalHorizontalRuleNode.HorizontalRuleNode, TweetNode, YouTubeNode, mark.MarkNode];
 
 var toolbar = {
 	alignDropdown: {
@@ -3478,6 +2452,100 @@ var useSettings = () => {
  * LICENSE file in the root directory of this source tree.
  *
  */
+
+function PortalImpl(_ref) {
+  var {
+    onClose,
+    children,
+    title,
+    closeOnClickOutside
+  } = _ref;
+  var modalRef = React.useRef();
+  React.useEffect(() => {
+    if (modalRef.current !== null) {
+      modalRef.current.focus();
+    }
+  }, []);
+  React.useEffect(() => {
+    var modalOverlayElement = null;
+
+    var handler = event => {
+      if (event.keyCode === 27) {
+        onClose();
+      }
+    };
+
+    var clickOutsideHandler = event => {
+      var target = event.target;
+
+      if (modalRef.current !== null && !modalRef.current.contains(target) && closeOnClickOutside) {
+        onClose();
+      }
+    };
+
+    if (modalRef.current !== null) {
+      var _modalRef$current;
+
+      modalOverlayElement = (_modalRef$current = modalRef.current) == null ? void 0 : _modalRef$current.parentElement;
+
+      if (modalOverlayElement !== null) {
+        var _modalOverlayElement;
+
+        (_modalOverlayElement = modalOverlayElement) == null ? void 0 : _modalOverlayElement.addEventListener('click', clickOutsideHandler);
+      }
+    }
+
+    window.addEventListener('keydown', handler);
+    return () => {
+      window.removeEventListener('keydown', handler);
+
+      if (modalOverlayElement !== null) {
+        var _modalOverlayElement2;
+
+        (_modalOverlayElement2 = modalOverlayElement) == null ? void 0 : _modalOverlayElement2.removeEventListener('click', clickOutsideHandler);
+      }
+    };
+  }, [closeOnClickOutside, onClose]);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "Modal__overlay",
+    role: "dialog"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "Modal__modal",
+    tabIndex: -1,
+    ref: modalRef
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "Modal__title"
+  }, title), /*#__PURE__*/React.createElement("button", {
+    className: "Modal__closeButton",
+    "aria-label": "Close modal",
+    type: "button",
+    onClick: onClose
+  }, "X"), /*#__PURE__*/React.createElement("div", {
+    className: "Modal__content"
+  }, children)));
+}
+
+function Modal(_ref2) {
+  var {
+    onClose,
+    children,
+    title,
+    closeOnClickOutside = false
+  } = _ref2;
+  return /*#__PURE__*/ReactDOM.createPortal( /*#__PURE__*/React.createElement(PortalImpl, {
+    onClose: onClose,
+    title: title,
+    closeOnClickOutside: closeOnClickOutside
+  }, children), document.body);
+}
+
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
 function useModal() {
   var [modalContent, setModalContent] = React.useState(null);
   var onClose = React.useCallback(() => {
@@ -3561,25 +2629,6 @@ var IMAGE = {
     textNode.replace(imageNode);
   },
   trigger: ')',
-  type: 'text-match'
-};
-var EQUATION = {
-  dependencies: [EquationNode],
-  export: (node, exportChildren, exportFormat) => {
-    if (!$isEquationNode(node)) {
-      return null;
-    }
-
-    return "$" + node.getEquation() + "$";
-  },
-  importRegExp: /\$([^$].+?)\$/,
-  regExp: /\$([^$].+?)\$$/,
-  replace: (textNode, match) => {
-    var [, equation] = match;
-    var equationNode = $createEquationNode(equation, true);
-    textNode.replace(equationNode);
-  },
-  trigger: '$',
   type: 'text-match'
 };
 var TWEET = {
@@ -3724,7 +2773,7 @@ var mapToTableCells = textContent => {
   return match[1].split('|').map(text => createTableCell(text));
 };
 
-var PLAYGROUND_TRANSFORMERS = [TABLE, HR, IMAGE, EQUATION, TWEET, markdown.CHECK_LIST, ...markdown.ELEMENT_TRANSFORMERS, ...markdown.TEXT_FORMAT_TRANSFORMERS, ...markdown.TEXT_MATCH_TRANSFORMERS];
+var PLAYGROUND_TRANSFORMERS = [TABLE, HR, IMAGE, TWEET, markdown.CHECK_LIST, ...markdown.ELEMENT_TRANSFORMERS, ...markdown.TEXT_FORMAT_TRANSFORMERS, ...markdown.TEXT_MATCH_TRANSFORMERS];
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -4673,6 +3722,264 @@ var EditorContext = /*#__PURE__*/React.createContext(null);
  * LICENSE file in the root directory of this source tree.
  *
  */
+function FileInput(_ref) {
+  var {
+    accept,
+    label,
+    onChange: _onChange,
+    'data-test-id': dataTestId
+  } = _ref;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "Input__wrapper"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "Input__label"
+  }, label), /*#__PURE__*/React.createElement("input", {
+    type: "file",
+    accept: accept,
+    className: "Input__input",
+    onChange: e => _onChange(e.target.files),
+    "data-test-id": dataTestId
+  }));
+}
+
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+function TextInput(_ref) {
+  var {
+    label,
+    value,
+    onChange: _onChange,
+    placeholder = '',
+    'data-test-id': dataTestId
+  } = _ref;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "Input__wrapper"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "Input__label"
+  }, label), /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    className: "Input__input",
+    placeholder: placeholder,
+    value: value,
+    onChange: e => {
+      _onChange(e.target.value);
+    },
+    "data-test-id": dataTestId
+  }));
+}
+
+var CAN_USE_DOM$1 = typeof window !== 'undefined' && typeof window.document !== 'undefined' && typeof window.document.createElement !== 'undefined';
+
+var getDOMSelection = targetWindow => CAN_USE_DOM$1 ? (targetWindow || window).getSelection() : null;
+
+var INSERT_IMAGE_COMMAND = /*#__PURE__*/lexical.createCommand('INSERT_IMAGE_COMMAND');
+function ImagesPlugin(_ref4) {
+  var {
+    captionsEnabled,
+    maxWidth
+  } = _ref4;
+  var [editor] = LexicalComposerContext.useLexicalComposerContext();
+  React.useEffect(() => {
+    if (!editor.hasNodes([ImageNode])) {
+      throw new Error('ImagesPlugin: ImageNode not registered on editor');
+    }
+
+    return utils.mergeRegister(editor.registerCommand(INSERT_IMAGE_COMMAND, payload => {
+      var imageNode = $createImageNode(_extends({}, payload, {
+        maxWidth: maxWidth
+      }));
+      lexical.$insertNodes([imageNode]);
+
+      if (lexical.$isRootOrShadowRoot(imageNode.getParentOrThrow())) {
+        utils.$wrapNodeInElement(imageNode, lexical.$createParagraphNode).selectEnd();
+      }
+
+      return true;
+    }, lexical.COMMAND_PRIORITY_EDITOR), editor.registerCommand(lexical.DRAGSTART_COMMAND, event => {
+      return onDragStart(event);
+    }, lexical.COMMAND_PRIORITY_HIGH), editor.registerCommand(lexical.DRAGOVER_COMMAND, event => {
+      return onDragover(event);
+    }, lexical.COMMAND_PRIORITY_LOW), editor.registerCommand(lexical.DROP_COMMAND, event => {
+      return onDrop(event, editor);
+    }, lexical.COMMAND_PRIORITY_HIGH));
+  }, [captionsEnabled, editor]);
+  return null;
+}
+var TRANSPARENT_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+var img = /*#__PURE__*/document.createElement('img');
+img.src = TRANSPARENT_IMAGE;
+
+function onDragStart(event) {
+  var node = getImageNodeInSelection();
+
+  if (!node) {
+    return false;
+  }
+
+  var dataTransfer = event.dataTransfer;
+
+  if (!dataTransfer) {
+    return false;
+  }
+
+  dataTransfer.setData('text/plain', '_');
+  dataTransfer.setDragImage(img, 0, 0);
+  dataTransfer.setData('application/x-lexical-drag', JSON.stringify({
+    data: {
+      altText: node.__altText,
+      caption: node.__caption,
+      height: node.__height,
+      key: node.getKey(),
+      maxWidth: node.__maxWidth,
+      showCaption: node.__showCaption,
+      src: node.__src,
+      width: node.__width
+    },
+    type: 'image'
+  }));
+  return true;
+}
+
+function onDragover(event) {
+  var node = getImageNodeInSelection();
+
+  if (!node) {
+    return false;
+  }
+
+  if (!canDropImage(event)) {
+    event.preventDefault();
+  }
+
+  return true;
+}
+
+function onDrop(event, editor) {
+  var node = getImageNodeInSelection();
+
+  if (!node) {
+    return false;
+  }
+
+  var data = getDragImageData(event);
+
+  if (!data) {
+    return false;
+  }
+
+  event.preventDefault();
+
+  if (canDropImage(event)) {
+    var range = getDragSelection(event);
+    node.remove();
+    var rangeSelection = lexical.$createRangeSelection();
+
+    if (range !== null && range !== undefined) {
+      rangeSelection.applyDOMRange(range);
+    }
+
+    lexical.$setSelection(rangeSelection);
+    editor.dispatchCommand(INSERT_IMAGE_COMMAND, data);
+  }
+
+  return true;
+}
+
+function getImageNodeInSelection() {
+  var selection = lexical.$getSelection();
+
+  if (!lexical.$isNodeSelection(selection)) {
+    return null;
+  }
+
+  var nodes = selection.getNodes();
+  var node = nodes[0];
+  return $isImageNode(node) ? node : null;
+}
+
+function getDragImageData(event) {
+  var _event$dataTransfer;
+
+  var dragData = (_event$dataTransfer = event.dataTransfer) == null ? void 0 : _event$dataTransfer.getData('application/x-lexical-drag');
+
+  if (!dragData) {
+    return null;
+  }
+
+  var {
+    type,
+    data
+  } = JSON.parse(dragData);
+
+  if (type !== 'image') {
+    return null;
+  }
+
+  return data;
+}
+
+function canDropImage(event) {
+  var target = event.target;
+  return !!(target && target instanceof HTMLElement && !target.closest('code, span.editor-image') && target.parentElement && target.parentElement.closest('div.ContentEditable__root'));
+}
+
+function getDragSelection(event) {
+  var range;
+  var target = event.target;
+  var targetWindow = target == null ? null : target.nodeType === 9 ? target.defaultView : target.ownerDocument.defaultView;
+  var domSelection = getDOMSelection(targetWindow);
+
+  if (document.caretRangeFromPoint) {
+    range = document.caretRangeFromPoint(event.clientX, event.clientY);
+  } else if (event.rangeParent && domSelection !== null) {
+    domSelection.collapse(event.rangeParent, event.rangeOffset || 0);
+    range = domSelection.getRangeAt(0);
+  } else {
+    throw Error("Cannot get the selection when dragging");
+  }
+
+  return range;
+}
+
+var ACCEPTABLE_IMAGE_TYPES = ['image/', 'image/heic', 'image/heif', 'image/gif', 'image/webp'];
+function DragDropPaste() {
+  var [editor] = LexicalComposerContext.useLexicalComposerContext();
+  React.useEffect(() => {
+    return editor.registerCommand(richText.DRAG_DROP_PASTE, files => {
+      _asyncToGenerator(function* () {
+        var filesResult = yield utils.mediaFileReader(files, [ACCEPTABLE_IMAGE_TYPES].flatMap(x => x));
+
+        for (var {
+          file,
+          result
+        } of filesResult) {
+          if (utils.isMimeType(file, ACCEPTABLE_IMAGE_TYPES)) {
+            editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
+              altText: file.name,
+              src: result
+            });
+          }
+        }
+      })();
+
+      return true;
+    }, lexical.COMMAND_PRIORITY_LOW);
+  }, [editor]);
+  return null;
+}
+
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
 
 var Editor = _ref => {
   var {
@@ -4714,7 +4021,7 @@ var Editor = _ref => {
     }
   }, children, /*#__PURE__*/React__default.createElement("div", {
     className: "verbum-editor-container"
-  }, /*#__PURE__*/React__default.createElement(LexicalAutoFocusPlugin.AutoFocusPlugin, null), /*#__PURE__*/React__default.createElement(LexicalClearEditorPlugin.ClearEditorPlugin, null), hashtagsEnabled && /*#__PURE__*/React__default.createElement(LexicalHashtagPlugin.HashtagPlugin, null), /*#__PURE__*/React__default.createElement(KeywordsPlugin, null), /*#__PURE__*/React__default.createElement(SpeechToTextPlugin$1, null), autoLinkEnabled && /*#__PURE__*/React__default.createElement(LexicalAutoLinkPlugin, null), /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement(LexicalRichTextPlugin.RichTextPlugin, {
+  }, /*#__PURE__*/React__default.createElement(LexicalAutoFocusPlugin.AutoFocusPlugin, null), /*#__PURE__*/React__default.createElement(LexicalClearEditorPlugin.ClearEditorPlugin, null), hashtagsEnabled && /*#__PURE__*/React__default.createElement(LexicalHashtagPlugin.HashtagPlugin, null), /*#__PURE__*/React__default.createElement(KeywordsPlugin, null), /*#__PURE__*/React__default.createElement(SpeechToTextPlugin$1, null), /*#__PURE__*/React__default.createElement(DragDropPaste, null), autoLinkEnabled && /*#__PURE__*/React__default.createElement(LexicalAutoLinkPlugin, null), /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement(LexicalRichTextPlugin.RichTextPlugin, {
     contentEditable: /*#__PURE__*/React__default.createElement(LexicalContentEditable, null),
     placeholder: placeholderComponent,
     ErrorBoundary: LexicalErrorBoundary
@@ -4916,144 +4223,6 @@ var AlignDropdown = () => {
  * LICENSE file in the root directory of this source tree.
  *
  */
-function TextInput(_ref) {
-  var {
-    label,
-    value,
-    onChange: _onChange,
-    placeholder = '',
-    'data-test-id': dataTestId
-  } = _ref;
-  return /*#__PURE__*/React.createElement("div", {
-    className: "Input__wrapper"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "Input__label"
-  }, label), /*#__PURE__*/React.createElement("input", {
-    type: "text",
-    className: "Input__input",
-    placeholder: placeholder,
-    value: value,
-    onChange: e => {
-      _onChange(e.target.value);
-    },
-    "data-test-id": dataTestId
-  }));
-}
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-function FileInput(_ref) {
-  var {
-    accept,
-    label,
-    onChange: _onChange,
-    'data-test-id': dataTestId
-  } = _ref;
-  return /*#__PURE__*/React.createElement("div", {
-    className: "Input__wrapper"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "Input__label"
-  }, label), /*#__PURE__*/React.createElement("input", {
-    type: "file",
-    accept: accept,
-    className: "Input__input",
-    onChange: e => _onChange(e.target.files),
-    "data-test-id": dataTestId
-  }));
-}
-
-var INSERT_IMAGE_COMMAND = /*#__PURE__*/lexical.createCommand("INSERT_IMAGE_COMMAND");
-function ImagesPlugin(_ref) {
-  var {
-    captionsEnabled
-  } = _ref;
-  var [editor] = LexicalComposerContext.useLexicalComposerContext();
-  React.useEffect(() => {
-    if (!editor.hasNodes([ImageNode])) {
-      throw new Error("ImagesPlugin: ImageNode not registered on editor");
-    }
-
-    return utils.mergeRegister(editor.registerCommand(INSERT_IMAGE_COMMAND, payload => {
-      var imageNode = $createImageNode(payload);
-      lexical.$insertNodes([imageNode]);
-
-      if (lexical.$isRootOrShadowRoot(imageNode.getParentOrThrow())) {
-        utils.$wrapNodeInElement(imageNode, lexical.$createParagraphNode).selectEnd();
-      }
-
-      return true;
-    }, lexical.COMMAND_PRIORITY_EDITOR));
-  }, [captionsEnabled, editor]);
-  return null;
-}
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-var INSERT_EQUATION_COMMAND = /*#__PURE__*/lexical.createCommand();
-function EquationsPlugin() {
-  var [editor] = LexicalComposerContext.useLexicalComposerContext();
-  React.useEffect(() => {
-    if (!editor.hasNodes([EquationNode])) {
-      throw new Error('EquationsPlugins: EquationsNode not registered on editor');
-    }
-
-    return editor.registerCommand(INSERT_EQUATION_COMMAND, payload => {
-      var {
-        equation,
-        inline
-      } = payload;
-      var selection = lexical.$getSelection();
-
-      if (lexical.$isRangeSelection(selection)) {
-        var equationNode = $createEquationNode(equation, inline);
-        selection.insertNodes([equationNode]);
-      }
-
-      return true;
-    }, lexical.COMMAND_PRIORITY_EDITOR);
-  }, [editor]);
-  return null;
-}
-
-var INSERT_EXCALIDRAW_COMMAND = /*#__PURE__*/lexical.createCommand();
-function ExcalidrawPlugin() {
-  var [editor] = LexicalComposerContext.useLexicalComposerContext();
-  React.useEffect(() => {
-    if (!editor.hasNodes([ExcalidrawNode])) {
-      throw new Error('ExcalidrawPlugin: ExcalidrawNode not registered on editor');
-    }
-
-    return editor.registerCommand(INSERT_EXCALIDRAW_COMMAND, () => {
-      var selection = lexical.$getSelection();
-
-      if (lexical.$isRangeSelection(selection)) {
-        var excalidrawNode = $createExcalidrawNode();
-        selection.insertNodes([excalidrawNode]);
-      }
-
-      return true;
-    }, lexical.COMMAND_PRIORITY_EDITOR);
-  }, [editor]);
-  return null;
-}
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
 var INSERT_POLL_COMMAND = /*#__PURE__*/lexical.createCommand();
 function PollPlugin() {
   var [editor] = LexicalComposerContext.useLexicalComposerContext();
@@ -5152,63 +4321,6 @@ function YouTubePlugin() {
     }, lexical.COMMAND_PRIORITY_EDITOR);
   }, [editor]);
   return null;
-}
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-function KatexEquationAlterer(_ref) {
-  var {
-    onConfirm,
-    initialEquation = ''
-  } = _ref;
-  var [equation, setEquation] = React.useState(initialEquation);
-  var [inline, setInline] = React.useState(true);
-  var onClick = React.useCallback(() => {
-    onConfirm(equation, inline);
-  }, [onConfirm, equation, inline]);
-  var onCheckboxChange = React.useCallback(() => {
-    setInline(!inline);
-  }, [setInline, inline]);
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "KatexEquationAlterer_defaultRow"
-  }, "Inline", /*#__PURE__*/React.createElement("input", {
-    type: "checkbox",
-    checked: inline,
-    onChange: onCheckboxChange
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "KatexEquationAlterer_defaultRow"
-  }, "Equation "), /*#__PURE__*/React.createElement("div", {
-    className: "KatexEquationAlterer_centerRow"
-  }, inline ? /*#__PURE__*/React.createElement("input", {
-    onChange: event => {
-      setEquation(event.target.value);
-    },
-    value: equation,
-    className: "KatexEquationAlterer_textArea"
-  }) : /*#__PURE__*/React.createElement("textarea", {
-    onChange: event => {
-      setEquation(event.target.value);
-    },
-    value: equation,
-    className: "KatexEquationAlterer_textArea"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "KatexEquationAlterer_defaultRow"
-  }, "Visualization "), /*#__PURE__*/React.createElement("div", {
-    className: "KatexEquationAlterer_centerRow"
-  }, /*#__PURE__*/React.createElement(KatexRenderer, {
-    equation: equation,
-    inline: false,
-    onClick: () => null
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "KatexEquationAlterer_dialogActions"
-  }, /*#__PURE__*/React.createElement(Button, {
-    onClick: onClick
-  }, "Confirm")));
 }
 
 var MIN_ROW_HEIGHT = 33;
@@ -6141,41 +5253,27 @@ function InsertYouTubeDialog(_ref7) {
   }, "Confirm")));
 }
 
-function InsertEquationDialog(_ref8) {
-  var {
-    activeEditor,
-    onClose
-  } = _ref8;
-  var onEquationConfirm = React.useCallback((equation, inline) => {
-    activeEditor.dispatchCommand(INSERT_EQUATION_COMMAND, {
-      equation,
-      inline
-    });
-    onClose();
-  }, [activeEditor, onClose]);
-  return /*#__PURE__*/React__default.createElement(KatexEquationAlterer, {
-    onConfirm: onEquationConfirm
-  });
-}
-
-var InsertDropdown = _ref9 => {
+var InsertDropdown = _ref8 => {
   var {
     enableTable = true,
-    enableImage = true,
+    enableImage = {
+      enable: true,
+      maxWidth: 1000
+    },
     enableYoutube = false,
     enableTwitter = false,
     enablePoll = false,
-    enableEquations = false,
-    enableExcalidraw = false,
     enableHorizontalRule = false,
     enableStickyNote = false
-  } = _ref9;
+  } = _ref8;
   var {
     initialEditor,
     activeEditor
   } = React.useContext(EditorContext);
   var [modal, showModal] = useModal();
-  return /*#__PURE__*/React__default.createElement("div", null, enableTable && /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement(LexicalTablePlugin.TablePlugin, null), /*#__PURE__*/React__default.createElement(TableActionMenuPlugin, null), /*#__PURE__*/React__default.createElement(TableCellResizerPlugin, null)), enableYoutube && /*#__PURE__*/React__default.createElement(YouTubePlugin, null), enableTwitter && /*#__PURE__*/React__default.createElement(TwitterPlugin, null), enablePoll && /*#__PURE__*/React__default.createElement(PollPlugin, null), enableImage && /*#__PURE__*/React__default.createElement(ImagesPlugin, null), enableEquations && /*#__PURE__*/React__default.createElement(EquationsPlugin, null), enableExcalidraw && /*#__PURE__*/React__default.createElement(ExcalidrawPlugin, null), enableHorizontalRule && /*#__PURE__*/React__default.createElement(HorizontalRulePlugin, null), /*#__PURE__*/React__default.createElement(DropDown, {
+  return /*#__PURE__*/React__default.createElement("div", null, enableTable && /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement(LexicalTablePlugin.TablePlugin, null), /*#__PURE__*/React__default.createElement(TableActionMenuPlugin, null), /*#__PURE__*/React__default.createElement(TableCellResizerPlugin, null)), enableYoutube && /*#__PURE__*/React__default.createElement(YouTubePlugin, null), enableTwitter && /*#__PURE__*/React__default.createElement(TwitterPlugin, null), enablePoll && /*#__PURE__*/React__default.createElement(PollPlugin, null), enableImage.enable && /*#__PURE__*/React__default.createElement(ImagesPlugin, {
+    maxWidth: enableImage.maxWidth
+  }), enableHorizontalRule && /*#__PURE__*/React__default.createElement(HorizontalRulePlugin, null), /*#__PURE__*/React__default.createElement(DropDown, {
     buttonClassName: "verbum-toolbar-item spaced",
     buttonLabel: "Insert",
     buttonAriaLabel: "Insert specialized editor node",
@@ -6190,7 +5288,7 @@ var InsertDropdown = _ref9 => {
     className: "verbum-icon verbum-horizontal-rule"
   }), /*#__PURE__*/React__default.createElement("span", {
     className: "verbum-text"
-  }, "Horizontal Rule")), enableImage && /*#__PURE__*/React__default.createElement("button", {
+  }, "Horizontal Rule")), enableImage.enable && /*#__PURE__*/React__default.createElement("button", {
     onClick: () => {
       showModal('Insert Image', onClose => /*#__PURE__*/React__default.createElement(InsertImageDialog, {
         activeEditor: activeEditor,
@@ -6203,17 +5301,7 @@ var InsertDropdown = _ref9 => {
     className: "verbum-icon verbum-image"
   }), /*#__PURE__*/React__default.createElement("span", {
     className: "verbum-text"
-  }, "Image")), enableExcalidraw && /*#__PURE__*/React__default.createElement("button", {
-    onClick: () => {
-      activeEditor.dispatchCommand(INSERT_EXCALIDRAW_COMMAND, undefined);
-    },
-    className: "item",
-    type: "button"
-  }, /*#__PURE__*/React__default.createElement("i", {
-    className: "icon diagram-2"
-  }), /*#__PURE__*/React__default.createElement("span", {
-    className: "text"
-  }, "Excalidraw")), enableTable && /*#__PURE__*/React__default.createElement("div", null, /*#__PURE__*/React__default.createElement("button", {
+  }, "Image")), enableTable && /*#__PURE__*/React__default.createElement("div", null, /*#__PURE__*/React__default.createElement("button", {
     onClick: () => {
       showModal('Insert Table', onClose => /*#__PURE__*/React__default.createElement(InsertTableDialog, {
         activeEditor: activeEditor,
@@ -6265,20 +5353,7 @@ var InsertDropdown = _ref9 => {
     className: "verbum-icon verbum-youtube"
   }), /*#__PURE__*/React__default.createElement("span", {
     className: "verbum-text"
-  }, "YouTube Video")), enableEquations && /*#__PURE__*/React__default.createElement("button", {
-    onClick: () => {
-      showModal('Insert Equation', onClose => /*#__PURE__*/React__default.createElement(InsertEquationDialog, {
-        activeEditor: activeEditor,
-        onClose: onClose
-      }));
-    },
-    className: "item",
-    type: "button"
-  }, /*#__PURE__*/React__default.createElement("i", {
-    className: "icon equation"
-  }), /*#__PURE__*/React__default.createElement("span", {
-    className: "text"
-  }, "Equation")), enableStickyNote && /*#__PURE__*/React__default.createElement("button", {
+  }, "YouTube Video")), enableStickyNote && /*#__PURE__*/React__default.createElement("button", {
     onClick: () => {
       initialEditor.update(() => {
         var root = lexical.$getRoot();
@@ -7101,8 +6176,8 @@ function MoveWrapper(_ref4) {
         left,
         top
       } = div.getBoundingClientRect();
-      var x = clamp$1(e.clientX - left, width, 0);
-      var y = clamp$1(e.clientY - top, height, 0);
+      var x = clamp(e.clientX - left, width, 0);
+      var y = clamp(e.clientY - top, height, 0);
       onChange({
         x,
         y
@@ -7136,7 +6211,7 @@ function MoveWrapper(_ref4) {
   }, children);
 }
 
-function clamp$1(value, max, min) {
+function clamp(value, max, min) {
   return value > max ? max : value < min ? min : value;
 }
 
