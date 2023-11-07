@@ -3722,6 +3722,32 @@ var EditorContext = /*#__PURE__*/React.createContext(null);
  * LICENSE file in the root directory of this source tree.
  *
  */
+function DialogButtonsList(_ref) {
+  var {
+    children
+  } = _ref;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "DialogButtonsList"
+  }, children);
+}
+function DialogActions(_ref2) {
+  var {
+    'data-test-id': dataTestId,
+    children
+  } = _ref2;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "DialogActions",
+    "data-test-id": dataTestId
+  }, children);
+}
+
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
 function FileInput(_ref) {
   var {
     accept,
@@ -3778,6 +3804,115 @@ var CAN_USE_DOM$1 = typeof window !== 'undefined' && typeof window.document !== 
 var getDOMSelection = targetWindow => CAN_USE_DOM$1 ? (targetWindow || window).getSelection() : null;
 
 var INSERT_IMAGE_COMMAND = /*#__PURE__*/lexical.createCommand('INSERT_IMAGE_COMMAND');
+function InsertImageUriDialogBody(_ref) {
+  var {
+    onClick: _onClick
+  } = _ref;
+  var [src, setSrc] = React.useState('');
+  var [altText, setAltText] = React.useState('');
+  var isDisabled = src === '';
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(TextInput, {
+    label: "Image URL",
+    placeholder: "i.e. https://source.unsplash.com/random",
+    onChange: setSrc,
+    value: src,
+    "data-test-id": "image-modal-url-input"
+  }), /*#__PURE__*/React.createElement(TextInput, {
+    label: "Alt Text",
+    placeholder: "Random unsplash image",
+    onChange: setAltText,
+    value: altText,
+    "data-test-id": "image-modal-alt-text-input"
+  }), /*#__PURE__*/React.createElement(DialogActions, null, /*#__PURE__*/React.createElement(Button, {
+    "data-test-id": "image-modal-confirm-btn",
+    disabled: isDisabled,
+    onClick: () => _onClick({
+      altText,
+      src
+    })
+  }, "Confirm")));
+}
+function InsertImageUploadedDialogBody(_ref2) {
+  var {
+    onClick: _onClick2
+  } = _ref2;
+  var [src, setSrc] = React.useState('');
+  var [altText, setAltText] = React.useState('');
+  var isDisabled = src === '';
+
+  var loadImage = files => {
+    var reader = new FileReader();
+
+    reader.onload = function () {
+      if (typeof reader.result === 'string') {
+        setSrc(reader.result);
+      }
+
+      return '';
+    };
+
+    if (files !== null) {
+      reader.readAsDataURL(files[0]);
+    }
+  };
+
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(FileInput, {
+    label: "Image Upload",
+    onChange: loadImage,
+    accept: "image/*",
+    "data-test-id": "image-modal-file-upload"
+  }), /*#__PURE__*/React.createElement(TextInput, {
+    label: "Alt Text",
+    placeholder: "Descriptive alternative text",
+    onChange: setAltText,
+    value: altText,
+    "data-test-id": "image-modal-alt-text-input"
+  }), /*#__PURE__*/React.createElement(DialogActions, null, /*#__PURE__*/React.createElement(Button, {
+    "data-test-id": "image-modal-file-upload-btn",
+    disabled: isDisabled,
+    onClick: () => _onClick2({
+      altText,
+      src
+    })
+  }, "Confirm")));
+}
+var InsertImageDialog = _ref3 => {
+  var {
+    activeEditor,
+    onClose
+  } = _ref3;
+  var [mode, setMode] = React.useState(null);
+  var hasModifier = React.useRef(false);
+  React.useEffect(() => {
+    hasModifier.current = false;
+
+    var handler = e => {
+      hasModifier.current = e.altKey;
+    };
+
+    document.addEventListener('keydown', handler);
+    return () => {
+      document.removeEventListener('keydown', handler);
+    };
+  }, [activeEditor]);
+
+  var onClick = payload => {
+    activeEditor.dispatchCommand(INSERT_IMAGE_COMMAND, payload);
+    onClose();
+  };
+
+  return /*#__PURE__*/React.createElement(React.Fragment, null, !mode && /*#__PURE__*/React.createElement(DialogButtonsList, null, /*#__PURE__*/React.createElement(Button, {
+    "data-test-id": "image-modal-option-url",
+    onClick: () => setMode('url')
+  }, "URL"), /*#__PURE__*/React.createElement(Button, {
+    "data-test-id": "image-modal-option-file",
+    onClick: () => setMode('file')
+  }, "File")), mode === 'url' && /*#__PURE__*/React.createElement(InsertImageUriDialogBody, {
+    onClick: onClick
+  }), mode === 'file' && /*#__PURE__*/React.createElement(InsertImageUploadedDialogBody, {
+    onClick: onClick
+  }));
+};
 function ImagesPlugin(_ref4) {
   var {
     captionsEnabled,
@@ -5024,7 +5159,7 @@ var parseYouTubeVideoID = url => {
 }; //#region Inserting different modules
 
 
-function InsertImageDialog(_ref) {
+function InsertImageDialog$1(_ref) {
   var {
     activeEditor,
     onClose
@@ -5044,9 +5179,9 @@ function InsertImageDialog(_ref) {
   }, "URL"), /*#__PURE__*/React__default.createElement(Button, {
     "data-test-id": "image-modal-option-file",
     onClick: () => setMode('file')
-  }, "File")), mode === 'url' && /*#__PURE__*/React__default.createElement(InsertImageUriDialogBody, {
+  }, "File")), mode === 'url' && /*#__PURE__*/React__default.createElement(InsertImageUriDialogBody$1, {
     onClick: onClick
-  }), mode === 'file' && /*#__PURE__*/React__default.createElement(InsertImageUploadedDialogBody, {
+  }), mode === 'file' && /*#__PURE__*/React__default.createElement(InsertImageUploadedDialogBody$1, {
     onClick: onClick
   }));
 }
@@ -5138,7 +5273,7 @@ function InsertTweetDialog(_ref4) {
   }, "Confirm")));
 }
 
-function InsertImageUriDialogBody(_ref5) {
+function InsertImageUriDialogBody$1(_ref5) {
   var {
     onClick: _onClick
   } = _ref5;
@@ -5169,7 +5304,7 @@ function InsertImageUriDialogBody(_ref5) {
   }, "Confirm")));
 }
 
-function InsertImageUploadedDialogBody(_ref6) {
+function InsertImageUploadedDialogBody$1(_ref6) {
   var {
     onClick: _onClick2
   } = _ref6;
@@ -5284,7 +5419,7 @@ var InsertDropdown = _ref8 => {
     className: "verbum-text"
   }, "Horizontal Rule")), enableImage.enable && /*#__PURE__*/React__default.createElement("button", {
     onClick: () => {
-      showModal('Insert Image', onClose => /*#__PURE__*/React__default.createElement(InsertImageDialog, {
+      showModal('Insert Image', onClose => /*#__PURE__*/React__default.createElement(InsertImageDialog$1, {
         activeEditor: activeEditor,
         onClose: onClose
       }));
@@ -6914,14 +7049,21 @@ var ImageComponent$2 = {
 exports.AlignDropdown = AlignDropdown;
 exports.BackgroundColorPicker = BackgroundColorPicker;
 exports.BoldButton = BoldButton;
+exports.CAN_USE_DOM = CAN_USE_DOM$1;
 exports.CodeFormatButton = CodeFormatButton;
 exports.Divider = Divider$1;
 exports.Editor = Editor;
 exports.EditorComposer = EditorComposer;
+exports.EditorContext = EditorContext;
 exports.FloatingLinkEditor = FloatingLinkEditor;
 exports.FontFamilyDropdown = FontFamilyDropdown;
 exports.FontSizeDropdown = FontSizeDropdown;
+exports.INSERT_IMAGE_COMMAND = INSERT_IMAGE_COMMAND;
+exports.ImagesPlugin = ImagesPlugin;
 exports.InsertDropdown = InsertDropdown;
+exports.InsertImageDialog = InsertImageDialog;
+exports.InsertImageUploadedDialogBody = InsertImageUploadedDialogBody;
+exports.InsertImageUriDialogBody = InsertImageUriDialogBody;
 exports.InsertLinkButton = InsertLinkButton;
 exports.ItalicButton = ItalicButton;
 exports.MentionsPlugin = MentionsPlugin;
