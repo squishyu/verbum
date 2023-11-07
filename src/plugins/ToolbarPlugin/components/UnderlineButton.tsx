@@ -16,7 +16,7 @@ const UnderlineButton = () => {
       onClick={() => {
         activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline');
       }}
-      className={'toolbar-item spaced ' + (isUnderline ? 'active' : '')}
+      className={'verbum-toolbar-item spaced ' + (isUnderline ? 'active' : '')}
       title={
         IS_APPLE
           ? `${t('toolbar:underlineButton.Title')} (⌘U)`
@@ -27,7 +27,7 @@ const UnderlineButton = () => {
       }`}
       type="button"
     >
-      <i className="format underline" />
+      <i className="verbum-format verbum-underline" />
     </button>
   );
 };

@@ -15,12 +15,12 @@ const InsertLinkButton = () => {
     <>
       <button
         onClick={insertLink}
-        className={'toolbar-item spaced ' + (isLink ? 'active' : '')}
+        className={'verbum-toolbar-item spaced ' + (isLink ? 'active' : '')}
         aria-label={t('toolbar:insertLinkButton.Description')}
         title={t('toolbar:insertLinkButton.Description')}
         type="button"
       >
-        <i className="format link" />
+        <i className="verbum-format verbum-link" />
       </button>
       {isLink &&
         createPortal(

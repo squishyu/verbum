@@ -16,9 +16,9 @@ const BackgroundColorPicker = () => {
 
   return (
     <ColorPicker
-      buttonClassName="toolbar-item color-picker"
+      buttonClassName="verbum-toolbar-item verbum-color-picker"
       buttonAriaLabel={t('toolbar:backgroundColorPicker.Description')}
-      buttonIconClassName="icon bg-color"
+      buttonIconClassName="verbum-icon verbum-bg-color"
       color={bgColor}
       onChange={onBgColorSelect}
       title="bg color"

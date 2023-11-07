@@ -374,10 +374,10 @@ const InsertDropdown: React.FC<IInsertDropdownProps> = ({
       {enableHorizontalRule && <HorizontalRulePlugin />}
 
       <DropDown
-        buttonClassName="toolbar-item spaced"
+        buttonClassName="verbum-toolbar-item spaced"
         buttonLabel="Insert"
         buttonAriaLabel="Insert specialized editor node"
-        buttonIconClassName="icon plus"
+        buttonIconClassName="verbum-icon verbum-plus"
       >
         {enableHorizontalRule && (
           <button
@@ -387,11 +387,11 @@ const InsertDropdown: React.FC<IInsertDropdownProps> = ({
                 undefined
               );
             }}
-            className="item"
+            className="verbum-item"
             type="button"
           >
-            <i className="icon horizontal-rule" />
-            <span className="text">Horizontal Rule</span>
+            <i className="verbum-icon verbum-horizontal-rule" />
+            <span className="verbum-text">Horizontal Rule</span>
           </button>
         )}
         {enableImage && (
@@ -404,11 +404,11 @@ const InsertDropdown: React.FC<IInsertDropdownProps> = ({
                 />
               ));
             }}
-            className="item"
+            className="verbum-item"
             type="button"
           >
-            <i className="icon image" />
-            <span className="text">Image</span>
+            <i className="verbum-icon verbum-image" />
+            <span className="verbum-text">Image</span>
           </button>
         )}
         {enableExcalidraw && (
@@ -437,11 +437,11 @@ const InsertDropdown: React.FC<IInsertDropdownProps> = ({
                   />
                 ));
               }}
-              className="item"
+              className="verbum-item"
               type="button"
             >
-              <i className="icon table" />
-              <span className="text">Table</span>
+              <i className="verbum-icon verbum-table" />
+              <span className="verbum-text">Table</span>
             </button>
           </div>
         )}
@@ -455,11 +455,11 @@ const InsertDropdown: React.FC<IInsertDropdownProps> = ({
                 />
               ));
             }}
-            className="item"
+            className="verbum-item"
             type="button"
           >
-            <i className="icon poll" />
-            <span className="text">Poll</span>
+            <i className="verbum-icon verbum-poll" />
+            <span className="verbum-text">Poll</span>
           </button>
         )}
         {enableTwitter && (
@@ -472,11 +472,11 @@ const InsertDropdown: React.FC<IInsertDropdownProps> = ({
                 />
               ));
             }}
-            className="item"
+            className="verbum-item"
             type="button"
           >
-            <i className="icon tweet" />
-            <span className="text">Tweet</span>
+            <i className="verbum-icon verbum-tweet" />
+            <span className="verbum-text">Tweet</span>
           </button>
         )}
         {enableYoutube && (
@@ -489,11 +489,11 @@ const InsertDropdown: React.FC<IInsertDropdownProps> = ({
                 />
               ));
             }}
-            className="item"
+            className="verbum-item"
             type="button"
           >
-            <i className="icon youtube" />
-            <span className="text">YouTube Video</span>
+            <i className="verbum-icon verbum-youtube" />
+            <span className="verbum-text">YouTube Video</span>
           </button>
         )}
         {enableEquations && (
@@ -522,11 +522,11 @@ const InsertDropdown: React.FC<IInsertDropdownProps> = ({
                 root.append(stickyNode);
               });
             }}
-            className="item"
+            className="verbum-item"
             type="button"
           >
-            <i className="icon sticky" />
-            <span className="text">Sticky Note</span>
+            <i className="verbum-icon verbum-sticky" />
+            <span className="verbum-text">Sticky Note</span>
           </button>
         )}
       </DropDown>

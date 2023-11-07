@@ -214,7 +214,7 @@ function MentionsTypeaheadMenuItem({
       onClick={onClick}
     >
       {option.picture}
-      <span className="text">{option.name}</span>
+      <span className="verbum-text">{option.name}</span>
     </li>
   );
 }
@@ -295,7 +295,7 @@ export default function MentionsPlugin<A>(props: {
       ) =>
         anchorElementRef && results.length
           ? ReactDOM.createPortal(
-              <div className="typeahead-popover mentions-menu">
+              <div className="verbum-typeahead-popover verbum-mentions-menu">
                 <ul>
                   {options.map((option, i: number) => (
                     <MentionsTypeaheadMenuItem

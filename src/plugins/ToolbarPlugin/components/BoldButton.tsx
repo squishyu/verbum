@@ -16,7 +16,7 @@ const BoldButton = () => {
       onClick={() => {
         activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
       }}
-      className={'toolbar-item spaced ' + (isBold ? 'active' : '')}
+      className={'verbum-toolbar-item spaced ' + (isBold ? 'active' : '')}
       title={
         IS_APPLE
           ? `${t('toolbar:boldButton.Title')} (⌘B)`
@@ -27,7 +27,7 @@ const BoldButton = () => {
       }`}
       type="button"
     >
-      <i className="format bold" />
+      <i className="verbum-format verbum-bold" />
     </button>
   );
 };

@@ -112,7 +112,7 @@ export default function ActionsPlugin({
   }, [editor]);
 
   return (
-    <div className="actions">
+    <div className="verbum-actions">
       {SUPPORT_SPEECH_RECOGNITION && (
         <button
           onClick={() => {
@@ -129,20 +129,20 @@ export default function ActionsPlugin({
           } ${t('action:speech_To_Text')}`}
           type="button"
         >
-          <i className="mic" />
+          <i className="verbum-mic" />
         </button>
       )}
       <button
-        className="action-button import"
+        className="verbum-action-button import"
         onClick={() => importFile(editor)}
         title={t('action:Import')}
         aria-label={t('action:Import_Description')}
         type="button"
       >
-        <i className="import" />
+        <i className="verbum-import" />
       </button>
       <button
-        className="action-button export"
+        className="verbum-action-button export"
         onClick={() =>
           exportFile(editor, {
             fileName: `Playground ${new Date().toISOString()}`,
@@ -153,10 +153,10 @@ export default function ActionsPlugin({
         aria-label={t('action:Export_Description')}
         type="button"
       >
-        <i className="export" />
+        <i className="verbum-export" />
       </button>
       <button
-        className="action-button clear"
+        className="verbum-action-button clear"
         disabled={isEditorEmpty}
         onClick={() => {
           showModal(t('action:Clear_Editor'), (onClose) => (
@@ -170,7 +170,7 @@ export default function ActionsPlugin({
         <i className="clear" />
       </button>
       <button
-        className={`action-button ${isEditable ? 'unlock' : 'lock'}`}
+        className={`verbum-action-button ${isEditable ? 'unlock' : 'lock'}`}
         onClick={() => {
           editor.setEditable(!editor.isEditable());
         }}
@@ -183,17 +183,17 @@ export default function ActionsPlugin({
         <i className={isEditable ? 'unlock' : 'lock'} />
       </button>
       <button
-        className="action-button"
+        className="verbum-action-button"
         onClick={handleMarkdownToggle}
         title={t('action:Convert_From_Markdown')}
         aria-label={t('action:Convert_From_Markdown_Description')}
         type="button"
       >
-        <i className="markdown" />
+        <i className="verbum-markdown" />
       </button>
       {isCollab && (
         <button
-          className="action-button connect"
+          className="verbum-action-button connect"
           onClick={() => {
             editor.dispatchCommand(TOGGLE_CONNECT_COMMAND, !connected);
           }}

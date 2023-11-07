@@ -166,100 +166,100 @@ function FloatingCharacterStylesEditor({
   }, [editor, updateCharacterStylesEditor]);
 
   return (
-    <div ref={popupCharStylesEditorRef} className="character-style-popup">
+    <div ref={popupCharStylesEditorRef} className="verbum-character-style-popup">
       <button
         onClick={() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
         }}
-        className={'popup-item spaced ' + (isBold ? 'active' : '')}
+        className={'verbum-popup-item spaced ' + (isBold ? 'active' : '')}
         aria-label={t('toolbar:characterStylesPopupPlugin.Format_text_as_bold')}
         type="button"
       >
-        <i className="format bold" />
+        <i className="verbum-format verbum-bold" />
       </button>
       <button
         onClick={() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic');
         }}
-        className={'popup-item spaced ' + (isItalic ? 'active' : '')}
+        className={'verbum-popup-item spaced ' + (isItalic ? 'active' : '')}
         aria-label={t(
           'toolbar:characterStylesPopupPlugin.Format_text_as_italics'
         )}
         type="button"
       >
-        <i className="format italic" />
+        <i className="verbum-format verbum-italic" />
       </button>
       <button
         onClick={() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline');
         }}
-        className={'popup-item spaced ' + (isUnderline ? 'active' : '')}
+        className={'verbum-popup-item spaced ' + (isUnderline ? 'active' : '')}
         aria-label={t(
           'toolbar:characterStylesPopupPlugin.Format_text_to_underlined'
         )}
         type="button"
       >
-        <i className="format underline" />
+        <i className="verbum-format verbum-underline" />
       </button>
       <button
         onClick={() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough');
         }}
-        className={'popup-item spaced ' + (isStrikethrough ? 'active' : '')}
+        className={'verbum-popup-item spaced ' + (isStrikethrough ? 'active' : '')}
         aria-label={t(
           'toolbar:characterStylesPopupPlugin.Format_text_with_a_strikethrough'
         )}
         type="button"
       >
-        <i className="format strikethrough" />
+        <i className="verbum-format verbum-strikethrough" />
       </button>
       <button
         onClick={() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'subscript');
         }}
-        className={'popup-item spaced ' + (isSubscript ? 'active' : '')}
+        className={'verbum-popup-item spaced ' + (isSubscript ? 'active' : '')}
         title="Subscript"
         aria-label={t('toolbar:characterStylesPopupPlugin.Format_Subscript')}
         type="button"
       >
-        <i className="format subscript" />
+        <i className="verbum-format verbum-subscript" />
       </button>
       <button
         onClick={() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'superscript');
         }}
-        className={'popup-item spaced ' + (isSuperscript ? 'active' : '')}
+        className={'verbum-popup-item spaced ' + (isSuperscript ? 'active' : '')}
         title="Superscript"
         aria-label={t('toolbar:characterStylesPopupPlugin.Format_Superscript')}
         type="button"
       >
-        <i className="format superscript" />
+        <i className="verbum-format verbum-superscript" />
       </button>
       <button
         onClick={() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code');
         }}
-        className={'popup-item spaced ' + (isCode ? 'active' : '')}
+        className={'verbum-popup-item spaced ' + (isCode ? 'active' : '')}
         aria-label={t('toolbar:characterStylesPopupPlugin.Insert_code_block')}
         type="button"
       >
-        <i className="format code" />
+        <i className="verbum-format verbum-code" />
       </button>
       <button
         onClick={insertLink}
-        className={'popup-item spaced ' + (isLink ? 'active' : '')}
+        className={'verbum-popup-item spaced ' + (isLink ? 'active' : '')}
         aria-label={t('toolbar:characterStylesPopupPlugin.Insert_link')}
         type="button"
       >
-        <i className="format link" />
+        <i className="verbum-format verbum-link" />
       </button>
       <button
         onClick={insertComment}
-        className={'popup-item spaced ' + (isLink ? 'active' : '')}
+        className={'verbum-popup-item spaced ' + (isLink ? 'active' : '')}
         aria-label={t('toolbar:characterStylesPopupPlugin.Add_comment')}
         type="button"
       >
-        <i className="format add-comment" />
+        <i className="verbum-format verbum-add-comment" />
       </button>
     </div>
   );

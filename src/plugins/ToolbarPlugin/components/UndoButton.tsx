@@ -21,11 +21,11 @@ const UndoButton = () => {
           ? `${t('toolbar:undoButton.Title')} (⌘Z)`
           : `${t('toolbar:undoButton.Title')} (Ctrl+Z)`
       }
-      className="toolbar-item spaced"
+      className="verbum-toolbar-item spaced"
       aria-label={t('toolbar:undoButton.Description')}
       type="button"
     >
-      <i className="format undo" />
+      <i className="verbum-format verbum-undo" />
     </button>
   );
 };

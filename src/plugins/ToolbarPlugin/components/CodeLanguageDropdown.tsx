@@ -43,12 +43,12 @@ const CodeLanguageDropdown = () => {
   return (
     <>
       <Select
-        className="toolbar-item code-language"
+        className="verbum-toolbar-item code-language"
         onChange={onCodeLanguageSelect}
         options={CODE_LANGUAGE_OPTIONS}
         value={codeLanguage}
       />
-      <i className="chevron-down inside" />
+      <i className="verbum-chevron-down inside" />
     </>
   );
 };

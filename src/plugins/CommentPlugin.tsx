@@ -114,7 +114,7 @@ function AddCommentBox({
         onClick={onAddComment}
         type="button"
       >
-        <i className="icon add-comment" />
+        <i className="verbum-icon verbum-add-comment" />
       </button>
     </div>
   );

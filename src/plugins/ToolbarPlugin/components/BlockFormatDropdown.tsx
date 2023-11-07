@@ -107,76 +107,76 @@ const BlockFormatDropdown = () => {
     <DropDown
       buttonLabel={t(`blockFormatDropdown.${blockType}`)}
       buttonAriaLabel={t('toolbar:blockFormatDropdown.Description')}
-      buttonClassName="toolbar-item block-controls"
+      buttonClassName="verbum-toolbar-item verbum-block-controls"
       buttonIconClassName={'icon block-type ' + blockType}
     >
-      <button className="item" onClick={formatParagraph} type="button">
-        <span className="icon paragraph" />
-        <span className="text">{t('toolbar:blockFormatDropdown.paragraph')}</span>
+      <button className="verbum-item" onClick={formatParagraph} type="button">
+        <span className="verbum-icon verbum-paragraph" />
+        <span className="verbum-text">{t('toolbar:blockFormatDropdown.paragraph')}</span>
         {blockType === 'paragraph' && <span className="active" />}
       </button>
       <button
-        className="item"
+        className="verbum-item"
         onClick={() => formatHeading('h1')}
         type="button"
       >
-        <span className="icon h1" />
-        <span className="text">
+        <span className="verbum-icon verbum-h1" />
+        <span className="verbum-text">
           {t('toolbar:blockFormatDropdown.h1')}
         </span>
         {blockType === 'h1' && <span className="active" />}
       </button>
       <button
-        className="item"
+        className="verbum-item"
         onClick={() => formatHeading('h2')}
         type="button"
       >
-        <span className="icon h2" />
-        <span className="text">
+        <span className="verbum-icon verbum-h2" />
+        <span className="verbum-text">
           {t('toolbar:blockFormatDropdown.h2')}
         </span>
         {blockType === 'h2' && <span className="active" />}
       </button>
       <button
-        className="item"
+        className="verbum-item"
         onClick={() => formatHeading('h3')}
         type="button"
       >
-        <span className="icon h3" />
-        <span className="text">
+        <span className="verbum-icon verbum-h3" />
+        <span className="verbum-text">
           {t('toolbar:blockFormatDropdown.h3')}
         </span>
         {blockType === 'h3' && <span className="active" />}
       </button>
-      <button className="item" onClick={formatBulletList} type="button">
-        <span className="icon bullet-list" />
-        <span className="text">
+      <button className="verbum-item" onClick={formatBulletList} type="button">
+        <span className="verbum-icon verbum-bullet-list" />
+        <span className="verbum-text">
           {t('toolbar:blockFormatDropdown.bullet')}
         </span>
         {blockType === 'bullet' && <span className="active" />}
       </button>
-      <button className="item" onClick={formatNumberedList} type="button">
-        <span className="icon numbered-list" />
-        <span className="text">
+      <button className="verbum-item" onClick={formatNumberedList} type="button">
+        <span className="verbum-icon verbum-numbered-list" />
+        <span className="verbum-text">
           {t('toolbar:blockFormatDropdown.number')}
         </span>
         {blockType === 'number' && <span className="active" />}
       </button>
-      <button className="item" onClick={formatCheckList} type="button">
-        <span className="icon check-list" />
-        <span className="text">
+      <button className="verbum-item" onClick={formatCheckList} type="button">
+        <span className="verbum-icon verbum-check-list" />
+        <span className="verbum-text">
           {t('toolbar:blockFormatDropdown.check')}
         </span>
         {blockType === 'check' && <span className="active" />}
       </button>
-      <button className="item" onClick={formatQuote} type="button">
-        <span className="icon quote" />
-        <span className="text">{t('toolbar:blockFormatDropdown.quote')}</span>
+      <button className="verbum-item" onClick={formatQuote} type="button">
+        <span className="verbum-icon verbum-quote" />
+        <span className="verbum-text">{t('toolbar:blockFormatDropdown.quote')}</span>
         {blockType === 'quote' && <span className="active" />}
       </button>
-      <button className="item" onClick={formatCode} type="button">
-        <span className="icon code" />
-        <span className="text">
+      <button className="verbum-item" onClick={formatCode} type="button">
+        <span className="verbum-icon verbum-code" />
+        <span className="verbum-text">
           {t('toolbar:blockFormatDropdown.code')}
         </span>
         {blockType === 'code' && <span className="active" />}

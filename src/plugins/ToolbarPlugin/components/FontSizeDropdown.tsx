@@ -36,12 +36,12 @@ const FontSizeDropdown = ({
   return (
     <>
       <Select
-        className="toolbar-item font-size"
+        className="verbum-toolbar-item verbum-font-size"
         onChange={onFontSizeSelect}
         options={fontSizeOptions}
         value={fontSize}
       />
-      <i className="chevron-down inside" />
+      <i className="verbum-chevron-down inside" />
     </>
   );
 };

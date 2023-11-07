@@ -15,12 +15,12 @@ const CodeFormatButton = () => {
       onClick={() => {
         activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code');
       }}
-      className={'toolbar-item spaced ' + (isCode ? 'active' : '')}
+      className={'verbum-toolbar-item spaced ' + (isCode ? 'active' : '')}
       title={t('toolbar:codeFormatButton.Description')}
       aria-label={t('toolbar:codeFormatButton.Description')}
       type="button"
     >
-      <i className="format code" />
+      <i className="verbum-format verbum-code" />
     </button>
   );
 };

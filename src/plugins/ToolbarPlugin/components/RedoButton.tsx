@@ -21,11 +21,11 @@ const RedoButton = () => {
           ? `${t('toolbar:redoButton.Title')} (⌘Y)`
           : `${t('toolbar:redoButton.Title')} (Ctrl+Y)`
       }
-      className="toolbar-item"
+      className="verbum-toolbar-item"
       aria-label={t('toolbar:redoButton.Description')}
       type="button"
     >
-      <i className="format redo" />
+      <i className="verbum-format verbum-redo" />
     </button>
   );
 };

@@ -87,11 +87,10 @@ const Editor = ({
       value={{ initialEditor: editor, activeEditor, setActiveEditor }}
     >
       {children}
-      <div className={`editor-container`}>
+      <div className={`verbum-editor-container`}>
         <AutoFocusPlugin />
         <ClearEditorPlugin />
         {hashtagsEnabled && <HashtagPlugin />}
-        {emojisEnabled && <EmojisPlugin />}
         <KeywordsPlugin />
         <SpeechToTextPlugin />
         {autoLinkEnabled && <AutoLinkPlugin />}

@@ -27,7 +27,7 @@ const EditorComposer = ({ children, initialEditorState }: IEditorComposer) => {
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <I18nextProvider i18n={i18n}>
-        <div className="editor-shell">{children}</div>
+          <div className="verbum-editor-shell">{children}</div>
       </I18nextProvider>
     </LexicalComposer>
   );

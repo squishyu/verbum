@@ -402,7 +402,7 @@ function useTestRecorder(editor: LexicalEditor): [JSX.Element, JSX.Element] {
   const button = (
     <button
       id="test-recorder-button"
-      className={`editor-dev-button ${isRecording ? 'active' : ''}`}
+      className={`verbum-editor-dev-button ${isRecording ? 'active' : ''}`}
       onClick={() => toggleEditorSelection(getCurrentEditor())}
       title={
         isRecording
@@ -413,24 +413,24 @@ function useTestRecorder(editor: LexicalEditor): [JSX.Element, JSX.Element] {
     />
   );
   const output = isRecording ? (
-    <div className="test-recorder-output">
-      <div className="test-recorder-toolbar">
+    <div className="verbum-test-recorder-output">
+      <div className="verbum-test-recorder-toolbar">
         <button
-          className="test-recorder-button"
+          className="verbum-test-recorder-button"
           id="test-recorder-button-snapshot"
           title={t('toolbar:testRecorderPlugin.Insert_snapshot')}
           onClick={onSnapshotClick}
           type="button"
         />
         <button
-          className="test-recorder-button"
+          className="verbum-test-recorder-button"
           id="test-recorder-button-copy"
           title={t('toolbar:testRecorderPlugin.Copy_to_clipboard')}
           onClick={onCopyClick}
           type="button"
         />
         <button
-          className="test-recorder-button"
+          className="verbum-test-recorder-button"
           id="test-recorder-button-download"
           title={t('toolbar:testRecorderPlugin.Download_as_a_file')}
           onClick={onDownloadClick}

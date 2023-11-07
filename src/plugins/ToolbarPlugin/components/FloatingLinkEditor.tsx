@@ -138,7 +138,7 @@ function FloatingLinkEditor({
   }, [isEditMode]);
 
   return (
-    <div ref={editorRef} className="link-editor">
+    <div ref={editorRef} className="verbum-link-editor">
       {isEditMode ? (
         <input
           ref={inputRef}

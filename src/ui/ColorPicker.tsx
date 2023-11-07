@@ -96,8 +96,8 @@ export default function ColorPicker({
 
   return (
     <DropDown {...rest} stopCloseOnClickSelf={true}>
-      <div className="color-picker-wrapper" style={{ width: WIDTH }}>
-        <div className="color-picker-basic-color">
+      <div className="verbum-color-picker-wrapper" style={{ width: WIDTH }}>
+        <div className="verbum-color-picker-basic-color">
           {basicColors.map((basicColor) => (
             <button
               className={basicColor === selfColor.hex ? ' active' : ''}
@@ -109,12 +109,12 @@ export default function ColorPicker({
           ))}
         </div>
         <MoveWrapper
-          className="color-picker-saturation"
+          className="verbum-color-picker-saturation"
           style={{ backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)` }}
           onChange={onMoveSaturation}
         >
           <div
-            className="color-picker-saturation_cursor"
+            className="verbum-color-picker-saturation_cursor"
             style={{
               backgroundColor: selfColor.hex,
               left: saturationPosition.x,
@@ -122,19 +122,19 @@ export default function ColorPicker({
             }}
           />
         </MoveWrapper>
-        <MoveWrapper className="color-picker-hue" onChange={onMoveHue}>
+        <MoveWrapper className="verbum-color-picker-hue" onChange={onMoveHue}>
           <div
-            className="color-picker-hue_cursor"
+            className="verbum-color-picker-hue_cursor"
             style={{
               backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)`,
               left: huePosition.x,
             }}
           />
         </MoveWrapper>
-        <div className="color-picker-info">
+        <div className="verbum-color-picker-info">
           <span>{selfColor.hex}</span>
           <div
-            className="color-picker-color"
+            className="verbum-color-picker-color"
             style={{ backgroundColor: selfColor.hex }}
           />
         </div>

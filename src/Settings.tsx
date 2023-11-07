@@ -42,11 +42,11 @@ export default function Settings(): JSX.Element {
     <>
       <button
         id="options-button"
-        className={`editor-dev-button ${showSettings ? 'active' : ''}`}
+        className={`verbum-editor-dev-button ${showSettings ? 'active' : ''}`}
         onClick={() => setShowSettings(!showSettings)}
       />
       {showSettings ? (
-        <div className="switches">
+        <div className="verbum-switches">
           {isRichText && isDevPlayground && (
             <Switch
               onClick={() => {

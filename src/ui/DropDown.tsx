@@ -75,14 +75,14 @@ export default function DropDown({
       >
         {buttonIconClassName && <span className={buttonIconClassName} />}
         {buttonLabel && (
-          <span className="text dropdown-button-text">{buttonLabel}</span>
+          <span className="verbum-text verbum-dropdown-button-text">{buttonLabel}</span>
         )}
-        <i className="chevron-down" />
+        <i className="verbum-chevron-down" />
       </button>
 
       {showDropDown &&
         createPortal(
-          <div className="dropdown" ref={dropDownRef}>
+          <div className="verbum-dropdown" ref={dropDownRef}>
             {children}
           </div>,
           document.body

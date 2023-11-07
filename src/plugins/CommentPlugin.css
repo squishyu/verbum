@@ -35,7 +35,7 @@
   background-color: #f6f6f6;
 }
 
-i.add-comment {
+i.verbum-add-comment {
   background-size: contain;
   display: inline-block;
   height: 20px;
@@ -420,7 +420,7 @@ i.send {
     brightness(100%) contrast(92%);
 }
 
-.CommentPlugin_CommentsPanel_List_DeleteButton i.delete {
+.CommentPlugin_CommentsPanel_List_DeleteButton i.verbum-sticky-note-delete {
   background-size: contain;
   position: absolute;
   left: 5px;

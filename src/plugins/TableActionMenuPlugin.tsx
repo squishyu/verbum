@@ -333,18 +333,18 @@ function TableActionMenu({
   return createPortal(
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
-      className="dropdown"
+      className="verbum-dropdown"
       ref={dropDownRef}
       onClick={(e) => {
         e.stopPropagation();
       }}
     >
       <button
-        className="item"
+        className="verbum-item"
         onClick={() => insertTableRowAtSelection(false)}
         type="button"
       >
-        <span className="text">
+        <span className="verbum-text">
           {t('toolbar:tableActionMenuPlugin.Insert')}{' '}
           {selectionCounts.rows === 1
             ? t('toolbar:tableActionMenuPlugin.row')
@@ -355,11 +355,11 @@ function TableActionMenu({
         </span>
       </button>
       <button
-        className="item"
+        className="verbum-item"
         onClick={() => insertTableRowAtSelection(true)}
         type="button"
       >
-        <span className="text">
+        <span className="verbum-text">
           {t('toolbar:tableActionMenuPlugin.Insert')}{' '}
           {selectionCounts.rows === 1
             ? t('toolbar:tableActionMenuPlugin.row')
@@ -371,11 +371,11 @@ function TableActionMenu({
       </button>
       <hr />
       <button
-        className="item"
+        className="verbum-item"
         onClick={() => insertTableColumnAtSelection(false)}
         type="button"
       >
-        <span className="text">
+        <span className="verbum-text">
           {t('toolbar:tableActionMenuPlugin.Insert')}{' '}
           {selectionCounts.columns === 1
             ? t('toolbar:tableActionMenuPlugin.column')
@@ -386,11 +386,11 @@ function TableActionMenu({
         </span>
       </button>
       <button
-        className="item"
+        className="verbum-item"
         onClick={() => insertTableColumnAtSelection(true)}
         type="button"
       >
-        <span className="text">
+        <span className="verbum-text">
           {t('toolbar:tableActionMenuPlugin.Insert')}{' '}
           {selectionCounts.columns === 1
             ? t('toolbar:tableActionMenuPlugin.column')
@@ -402,39 +402,39 @@ function TableActionMenu({
       </button>
       <hr />
       <button
-        className="item"
+        className="verbum-item"
         onClick={() => deleteTableColumnAtSelection()}
         type="button"
       >
-        <span className="text">
+        <span className="verbum-text">
           {t('toolbar:tableActionMenuPlugin.Delete_column')}
         </span>
       </button>
       <button
-        className="item"
+        className="verbum-item"
         onClick={() => deleteTableRowAtSelection()}
         type="button"
       >
-        <span className="text">
+        <span className="verbum-text">
           {t('toolbar:tableActionMenuPlugin.Delete_row')}
         </span>
       </button>
       <button
-        className="item"
+        className="verbum-item"
         onClick={() => deleteTableAtSelection()}
         type="button"
       >
-        <span className="text">
+        <span className="verbum-text">
           {t('toolbar:tableActionMenuPlugin.Delete_table')}
         </span>
       </button>
       <hr />
       <button
-        className="item"
+        className="verbum-item"
         onClick={() => toggleTableRowIsHeader()}
         type="button"
       >
-        <span className="text">
+        <span className="verbum-text">
           {(tableCellNode.__headerState & TableCellHeaderStates.ROW) ===
           TableCellHeaderStates.ROW
             ? t('action:Remove')
@@ -443,11 +443,11 @@ function TableActionMenu({
         </span>
       </button>
       <button
-        className="item"
+        className="verbum-item"
         onClick={() => toggleTableColumnIsHeader()}
         type="button"
       >
-        <span className="text">
+        <span className="verbum-text">
           {(tableCellNode.__headerState & TableCellHeaderStates.COLUMN) ===
           TableCellHeaderStates.COLUMN
             ? t('action:Remove')
@@ -563,11 +563,11 @@ function TableCellActionMenuContainer(): JSX.Element {
   }, [prevTableCellDOM, tableCellNode]);
 
   return (
-    <div className="table-cell-action-button-container" ref={menuButtonRef}>
+    <div className="verbum-table-cell-action-button-container" ref={menuButtonRef}>
       {tableCellNode != null && (
         <>
           <button
-            className="table-cell-action-button chevron-down"
+            className="verbum-table-cell-action-button chevron-down"
             onClick={(e) => {
               e.stopPropagation();
               setIsMenuOpen(!isMenuOpen);
@@ -575,7 +575,7 @@ function TableCellActionMenuContainer(): JSX.Element {
             ref={menuRootRef}
             type="button"
           >
-            <i className="chevron-down" />
+            <i className="verbum-chevron-down" />
           </button>
           {isMenuOpen && (
             <TableActionMenu

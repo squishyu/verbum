@@ -16,7 +16,7 @@ const ItalicButton = () => {
       onClick={() => {
         activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic');
       }}
-      className={'toolbar-item spaced ' + (isItalic ? 'active' : '')}
+      className={'verbum-toolbar-item spaced ' + (isItalic ? 'active' : '')}
       title={
         IS_APPLE
           ? `${t('toolbar:italicButton.Title')} (⌘I)`
@@ -27,7 +27,7 @@ const ItalicButton = () => {
       }`}
       type="button"
     >
-      <i className="format italic" />
+      <i className="verbum-format verbum-italic" />
     </button>
   );
 };
