@@ -5093,7 +5093,7 @@ function InsertImageDialog(_ref) {
   } = _ref;
   var [mode, setMode] = useState(null);
 
-  var _onClick = payload => {
+  var onClick = payload => {
     activeEditor.dispatchCommand(INSERT_IMAGE_COMMAND, payload);
     onClose();
   };
@@ -5101,21 +5101,15 @@ function InsertImageDialog(_ref) {
   return /*#__PURE__*/React__default.createElement(React__default.Fragment, null, !mode && /*#__PURE__*/React__default.createElement("div", {
     className: "ToolbarPlugin__dialogButtonsList"
   }, /*#__PURE__*/React__default.createElement(Button, {
-    "data-test-id": "image-modal-option-sample",
-    onClick: () => _onClick({
-      altText: 'Yellow flower in tilt shift lens',
-      src: null
-    })
-  }, "Sample"), /*#__PURE__*/React__default.createElement(Button, {
     "data-test-id": "image-modal-option-url",
     onClick: () => setMode('url')
   }, "URL"), /*#__PURE__*/React__default.createElement(Button, {
     "data-test-id": "image-modal-option-file",
     onClick: () => setMode('file')
   }, "File")), mode === 'url' && /*#__PURE__*/React__default.createElement(InsertImageUriDialogBody, {
-    onClick: _onClick
+    onClick: onClick
   }), mode === 'file' && /*#__PURE__*/React__default.createElement(InsertImageUploadedDialogBody, {
-    onClick: _onClick
+    onClick: onClick
   }));
 }
 
@@ -5208,7 +5202,7 @@ function InsertTweetDialog(_ref4) {
 
 function InsertImageUriDialogBody(_ref5) {
   var {
-    onClick: _onClick2
+    onClick: _onClick
   } = _ref5;
   var [src, setSrc] = useState('');
   var [altText, setAltText] = useState('');
@@ -5230,7 +5224,7 @@ function InsertImageUriDialogBody(_ref5) {
   }, /*#__PURE__*/React__default.createElement(Button, {
     "data-test-id": "image-modal-confirm-btn",
     disabled: isDisabled,
-    onClick: () => _onClick2({
+    onClick: () => _onClick({
       altText,
       src
     })
@@ -5239,7 +5233,7 @@ function InsertImageUriDialogBody(_ref5) {
 
 function InsertImageUploadedDialogBody(_ref6) {
   var {
-    onClick: _onClick3
+    onClick: _onClick2
   } = _ref6;
   var [src, setSrc] = useState('');
   var [altText, setAltText] = useState('');
@@ -5275,7 +5269,7 @@ function InsertImageUploadedDialogBody(_ref6) {
   }, /*#__PURE__*/React__default.createElement(Button, {
     "data-test-id": "image-modal-file-upload-btn",
     disabled: isDisabled,
-    onClick: () => _onClick3({
+    onClick: () => _onClick2({
       altText,
       src
     })
