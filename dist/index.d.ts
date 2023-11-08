@@ -8,4 +8,5 @@ import * as ToolbarTypes from './types';
 import Divider from './ui/Divider';
 import EditorContext from './context/EditorContext';
 export * from "./plugins/ImagesPlugin";
+export * from "./nodes";
 export { EditorComposer, EditorContext, Editor, ToolbarPlugin, AlignDropdown, BackgroundColorPicker, BoldButton, CodeFormatButton, FloatingLinkEditor, FontFamilyDropdown, FontSizeDropdown, ImagesPlugin, InsertDropdown, InsertLinkButton, ItalicButton, TextColorPicker, TextFormatDropdown, UnderlineButton, ToolbarTypes, Divider, MentionsPlugin, };

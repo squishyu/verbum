@@ -178,6 +178,9 @@ class EmojiNode extends lexical.TextNode {
   }
 
 }
+function $isEmojiNode(node) {
+  return node instanceof EmojiNode;
+}
 function $createEmojiNode(className, emojiText) {
   return new EmojiNode(className, emojiText).setMode('token');
 }
@@ -417,6 +420,9 @@ class KeywordNode extends lexical.TextNode {
 function $createKeywordNode(keyword) {
   return new KeywordNode(keyword);
 }
+function $isKeywordNode(node) {
+  return node instanceof KeywordNode;
+}
 
 var mentionStyle = 'background-color: rgba(24, 119, 232, 0.2)';
 class MentionNode extends lexical.TextNode {
@@ -467,6 +473,9 @@ function $createMentionNode(mentionName) {
   var mentionNode = new MentionNode(mentionName);
   mentionNode.setMode('segmented').toggleDirectionless();
   return mentionNode;
+}
+function $isMentionNode(node) {
+  return node instanceof MentionNode;
 }
 
 /**
@@ -1387,6 +1396,9 @@ class YouTubeNode extends LexicalDecoratorBlockNode.DecoratorBlockNode {
 }
 function $createYouTubeNode(videoID) {
   return new YouTubeNode(videoID);
+}
+function $isYouTubeNode(node) {
+  return node instanceof YouTubeNode;
 }
 
 /**
@@ -6782,6 +6794,19 @@ var ImageComponent$2 = {
   'default': ImageComponent$1
 };
 
+exports.$createEmojiNode = $createEmojiNode;
+exports.$createImageNode = $createImageNode;
+exports.$createKeywordNode = $createKeywordNode;
+exports.$createMentionNode = $createMentionNode;
+exports.$createPollNode = $createPollNode;
+exports.$createTypeaheadNode = $createTypeaheadNode;
+exports.$createYouTubeNode = $createYouTubeNode;
+exports.$isEmojiNode = $isEmojiNode;
+exports.$isImageNode = $isImageNode;
+exports.$isKeywordNode = $isKeywordNode;
+exports.$isMentionNode = $isMentionNode;
+exports.$isPollNode = $isPollNode;
+exports.$isYouTubeNode = $isYouTubeNode;
 exports.AlignDropdown = AlignDropdown;
 exports.BackgroundColorPicker = BackgroundColorPicker;
 exports.BoldButton = BoldButton;
@@ -6791,10 +6816,12 @@ exports.Divider = Divider$1;
 exports.Editor = Editor;
 exports.EditorComposer = EditorComposer;
 exports.EditorContext = EditorContext;
+exports.EmojiNode = EmojiNode;
 exports.FloatingLinkEditor = FloatingLinkEditor;
 exports.FontFamilyDropdown = FontFamilyDropdown;
 exports.FontSizeDropdown = FontSizeDropdown;
 exports.INSERT_IMAGE_COMMAND = INSERT_IMAGE_COMMAND;
+exports.ImageNode = ImageNode;
 exports.ImagesPlugin = ImagesPlugin;
 exports.InsertDropdown = InsertDropdown;
 exports.InsertImageDialog = InsertImageDialog;
@@ -6802,10 +6829,15 @@ exports.InsertImageUploadedDialogBody = InsertImageUploadedDialogBody;
 exports.InsertImageUriDialogBody = InsertImageUriDialogBody;
 exports.InsertLinkButton = InsertLinkButton;
 exports.ItalicButton = ItalicButton;
+exports.KeywordNode = KeywordNode;
+exports.MentionNode = MentionNode;
 exports.MentionsPlugin = MentionsPlugin;
+exports.PollNode = PollNode;
 exports.TextColorPicker = TextColorPicker;
 exports.TextFormatDropdown = TextFormatDropdown;
 exports.ToolbarPlugin = ToolbarPlugin;
 exports.ToolbarTypes = index;
+exports.TypeaheadNode = TypeaheadNode;
 exports.UnderlineButton = UnderlineButton;
+exports.YouTubeNode = YouTubeNode;
 //# sourceMappingURL=verbum.cjs.development.js.map

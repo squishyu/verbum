@@ -171,6 +171,9 @@ class EmojiNode extends TextNode {
   }
 
 }
+function $isEmojiNode(node) {
+  return node instanceof EmojiNode;
+}
 function $createEmojiNode(className, emojiText) {
   return new EmojiNode(className, emojiText).setMode('token');
 }
@@ -410,6 +413,9 @@ class KeywordNode extends TextNode {
 function $createKeywordNode(keyword) {
   return new KeywordNode(keyword);
 }
+function $isKeywordNode(node) {
+  return node instanceof KeywordNode;
+}
 
 var mentionStyle = 'background-color: rgba(24, 119, 232, 0.2)';
 class MentionNode extends TextNode {
@@ -460,6 +466,9 @@ function $createMentionNode(mentionName) {
   var mentionNode = new MentionNode(mentionName);
   mentionNode.setMode('segmented').toggleDirectionless();
   return mentionNode;
+}
+function $isMentionNode(node) {
+  return node instanceof MentionNode;
 }
 
 function styleInject(css, ref) {
@@ -1428,6 +1437,9 @@ class YouTubeNode extends DecoratorBlockNode {
 }
 function $createYouTubeNode(videoID) {
   return new YouTubeNode(videoID);
+}
+function $isYouTubeNode(node) {
+  return node instanceof YouTubeNode;
 }
 
 /**
@@ -6856,5 +6868,5 @@ var ImageComponent$2 = {
   'default': ImageComponent$1
 };
 
-export { AlignDropdown, BackgroundColorPicker, BoldButton, CAN_USE_DOM$1 as CAN_USE_DOM, CodeFormatButton, Divider$1 as Divider, Editor, EditorComposer, EditorContext, FloatingLinkEditor, FontFamilyDropdown, FontSizeDropdown, INSERT_IMAGE_COMMAND, ImagesPlugin, InsertDropdown, InsertImageDialog, InsertImageUploadedDialogBody, InsertImageUriDialogBody, InsertLinkButton, ItalicButton, MentionsPlugin, TextColorPicker, TextFormatDropdown, ToolbarPlugin, index as ToolbarTypes, UnderlineButton };
+export { $createEmojiNode, $createImageNode, $createKeywordNode, $createMentionNode, $createPollNode, $createTypeaheadNode, $createYouTubeNode, $isEmojiNode, $isImageNode, $isKeywordNode, $isMentionNode, $isPollNode, $isYouTubeNode, AlignDropdown, BackgroundColorPicker, BoldButton, CAN_USE_DOM$1 as CAN_USE_DOM, CodeFormatButton, Divider$1 as Divider, Editor, EditorComposer, EditorContext, EmojiNode, FloatingLinkEditor, FontFamilyDropdown, FontSizeDropdown, INSERT_IMAGE_COMMAND, ImageNode, ImagesPlugin, InsertDropdown, InsertImageDialog, InsertImageUploadedDialogBody, InsertImageUriDialogBody, InsertLinkButton, ItalicButton, KeywordNode, MentionNode, MentionsPlugin, PollNode, TextColorPicker, TextFormatDropdown, ToolbarPlugin, index as ToolbarTypes, TypeaheadNode, UnderlineButton, YouTubeNode };
 //# sourceMappingURL=verbum.esm.js.map
