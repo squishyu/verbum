@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useContext } from 'react';
-import { $getRoot, LexicalEditor, RangeSelection } from 'lexical';
+import React, { useState, useContext } from 'react';
+import { $getRoot, LexicalEditor } from 'lexical';
 import DropDown from '../../../ui/DropDown';
 import Button from '../../../ui/Button';
 import TextInput from '../../../ui/TextInput';
@@ -11,7 +11,6 @@ import ImagesPlugin, {
 import { INSERT_TABLE_COMMAND } from '@lexical/table';
 import { INSERT_HORIZONTAL_RULE_COMMAND } from '@lexical/react/LexicalHorizontalRuleNode';
 import PollPlugin, { INSERT_POLL_COMMAND } from '../../PollPlugin';
-import TwitterPlugin, { INSERT_TWEET_COMMAND } from '../../TwitterPlugin';
 import YouTubePlugin, { INSERT_YOUTUBE_COMMAND } from '../../YouTubePlugin';
 import { $createStickyNode } from '../../../nodes/StickyNode';
 import useModal from '../../../hooks/useModal';
@@ -118,42 +117,6 @@ function InsertPollDialog({
       <TextInput label="Question" onChange={setQuestion} value={question} />
       <div className="ToolbarPlugin__dialogActions">
         <Button disabled={question.trim() === ''} onClick={onClick}>
-          Confirm
-        </Button>
-      </div>
-    </>
-  );
-}
-
-const VALID_TWITTER_URL = /twitter.com\/[0-9a-zA-Z]{1,20}\/status\/([0-9]*)/g;
-
-function InsertTweetDialog({
-  activeEditor,
-  onClose,
-}: {
-  activeEditor: LexicalEditor;
-  onClose: () => void;
-}): JSX.Element {
-  const [text, setText] = useState('');
-
-  const onClick = () => {
-    const tweetID = text.split('status/')?.[1]?.split('?')?.[0];
-    activeEditor.dispatchCommand(INSERT_TWEET_COMMAND, tweetID);
-    onClose();
-  };
-
-  const isDisabled = text === '' || !text.match(VALID_TWITTER_URL);
-
-  return (
-    <>
-      <TextInput
-        label="Tweet URL"
-        placeholder="i.e. https://twitter.com/jack/status/20"
-        onChange={setText}
-        value={text}
-      />
-      <div className="ToolbarPlugin__dialogActions">
-        <Button disabled={isDisabled} onClick={onClick}>
           Confirm
         </Button>
       </div>
@@ -295,7 +258,6 @@ function InsertYouTubeDialog({
 export interface IInsertDropdownProps {
   enableTable?: boolean;
   enableYoutube?: boolean;
-  enableTwitter?: boolean;
   enablePoll?: boolean;
   enableImage?: { enable: boolean; maxWidth: number };
   enableEquations?: boolean;
@@ -308,7 +270,6 @@ const InsertDropdown: React.FC<IInsertDropdownProps> = ({
   enableTable = true,
   enableImage = { enable: true, maxWidth: 1000 },
   enableYoutube = false,
-  enableTwitter = false,
   enablePoll = false,
   enableHorizontalRule = false,
   enableStickyNote = false,
@@ -326,7 +287,6 @@ const InsertDropdown: React.FC<IInsertDropdownProps> = ({
         </>
       )}
       {enableYoutube && <YouTubePlugin />}
-      {enableTwitter && <TwitterPlugin />}
       {enablePoll && <PollPlugin />}
       {enableImage.enable && <ImagesPlugin maxWidth={enableImage.maxWidth} />}
       {enableHorizontalRule && <HorizontalRulePlugin />}
@@ -403,23 +363,6 @@ const InsertDropdown: React.FC<IInsertDropdownProps> = ({
           >
             <i className="verbum-icon verbum-poll" />
             <span className="verbum-text">Poll</span>
-          </button>
-        )}
-        {enableTwitter && (
-          <button
-            onClick={() => {
-              showModal('Insert Tweet', (onClose) => (
-                <InsertTweetDialog
-                  activeEditor={activeEditor}
-                  onClose={onClose}
-                />
-              ));
-            }}
-            className="verbum-item"
-            type="button"
-          >
-            <i className="verbum-icon verbum-tweet" />
-            <span className="verbum-text">Tweet</span>
           </button>
         )}
         {enableYoutube && (

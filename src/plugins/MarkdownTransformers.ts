@@ -44,7 +44,6 @@ import {
 } from 'lexical';
 
 import { $createImageNode, $isImageNode, ImageNode } from '../nodes/ImageNode';
-import { $createTweetNode, $isTweetNode, TweetNode } from '../nodes/TweetNode';
 
 export const HR: ElementTransformer = {
   dependencies: [HorizontalRuleNode],
@@ -89,24 +88,6 @@ export const IMAGE: TextMatchTransformer = {
   },
   trigger: ')',
   type: 'text-match',
-};
-
-export const TWEET: ElementTransformer = {
-  dependencies: [TweetNode],
-  export: (node) => {
-    if (!$isTweetNode(node)) {
-      return null;
-    }
-
-    return `<tweet id="${node.getId()}" />`;
-  },
-  regExp: /<tweet id="([^"]+?)"\s?\/>\s?$/,
-  replace: (textNode, _1, match) => {
-    const [, id] = match;
-    const tweetNode = $createTweetNode(id);
-    textNode.replace(tweetNode);
-  },
-  type: 'element',
 };
 
 // Very primitive table setup
@@ -244,7 +225,6 @@ export const PLAYGROUND_TRANSFORMERS: Array<Transformer> = [
   TABLE,
   HR,
   IMAGE,
-  TWEET,
   CHECK_LIST,
   ...ELEMENT_TRANSFORMERS,
   ...TEXT_FORMAT_TRANSFORMERS,

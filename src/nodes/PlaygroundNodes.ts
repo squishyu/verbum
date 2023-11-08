@@ -25,7 +25,6 @@ import { KeywordNode } from './KeywordNode';
 import { MentionNode } from './MentionNode';
 import { PollNode } from './PollNode';
 import { StickyNode } from './StickyNode';
-import { TweetNode } from './TweetNode';
 import { TypeaheadNode } from './TypeaheadNode';
 import { YouTubeNode } from './YouTubeNode';
 
@@ -51,7 +50,6 @@ const PlaygroundNodes: Array<Class<LexicalNode>> = [
   TypeaheadNode,
   KeywordNode,
   HorizontalRuleNode,
-  TweetNode,
   YouTubeNode,
   MarkNode,
 ];
