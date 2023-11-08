@@ -1272,172 +1272,6 @@ function $createStickyNode(xOffset, yOffset) {
   return new StickyNode(xOffset, yOffset, 'yellow');
 }
 
-var WIDGET_SCRIPT_URL = 'https://platform.twitter.com/widgets.js';
-
-function convertTweetElement(domNode) {
-  var id = domNode.getAttribute('data-lexical-tweet-id');
-
-  if (id) {
-    var node = $createTweetNode(id);
-    return {
-      node
-    };
-  }
-
-  return null;
-}
-
-var isTwitterScriptLoading = true;
-
-function TweetComponent(_ref) {
-  var {
-    className,
-    format,
-    loadingComponent,
-    nodeKey,
-    onError,
-    onLoad,
-    tweetID
-  } = _ref;
-  var containerRef = React.useRef(null);
-  var previousTweetIDRef = React.useRef('');
-  var [isTweetLoading, setIsTweetLoading] = React.useState(false);
-  var createTweet = React.useCallback( /*#__PURE__*/_asyncToGenerator(function* () {
-    try {
-      // @ts-expect-error Twitter is attached to the window.
-      yield window.twttr.widgets.createTweet(tweetID, containerRef.current);
-      setIsTweetLoading(false);
-      isTwitterScriptLoading = false;
-
-      if (onLoad) {
-        onLoad();
-      }
-    } catch (error) {
-      if (onError) {
-        onError(String(error));
-      }
-    }
-  }), [onError, onLoad, tweetID]);
-  React.useEffect(() => {
-    if (tweetID !== previousTweetIDRef.current) {
-      setIsTweetLoading(true);
-
-      if (isTwitterScriptLoading) {
-        var _document$body;
-
-        var script = document.createElement('script');
-        script.src = WIDGET_SCRIPT_URL;
-        script.async = true;
-        (_document$body = document.body) == null ? void 0 : _document$body.appendChild(script);
-        script.onload = createTweet;
-
-        if (onError) {
-          script.onerror = onError;
-        }
-      } else {
-        createTweet();
-      }
-
-      if (previousTweetIDRef) {
-        previousTweetIDRef.current = tweetID;
-      }
-    }
-  }, [createTweet, onError, tweetID]);
-  return /*#__PURE__*/React.createElement(LexicalBlockWithAlignableContents.BlockWithAlignableContents, {
-    className: className,
-    format: format,
-    nodeKey: nodeKey
-  }, isTweetLoading ? loadingComponent : null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: 'inline-block',
-      width: '550px'
-    },
-    ref: containerRef
-  }));
-}
-
-class TweetNode extends LexicalDecoratorBlockNode.DecoratorBlockNode {
-  constructor(id, format, key) {
-    super(format, key);
-    this.__id = id;
-  }
-
-  static getType() {
-    return 'tweet';
-  }
-
-  static clone(node) {
-    return new TweetNode(node.__id, node.__format, node.__key);
-  }
-
-  static importJSON(serializedNode) {
-    var node = $createTweetNode(serializedNode.id);
-    node.setFormat(serializedNode.format);
-    return node;
-  }
-
-  exportJSON() {
-    return _extends({}, super.exportJSON(), {
-      id: this.getId(),
-      type: 'tweet',
-      version: 1
-    });
-  }
-
-  static importDOM() {
-    return {
-      div: domNode => {
-        if (!domNode.hasAttribute('data-lexical-tweet-id')) {
-          return null;
-        }
-
-        return {
-          conversion: convertTweetElement,
-          priority: 2
-        };
-      }
-    };
-  }
-
-  exportDOM() {
-    var element = document.createElement('div');
-    element.setAttribute('data-lexical-tweet-id', this.__id);
-    return {
-      element
-    };
-  }
-
-  getId() {
-    return this.__id;
-  }
-
-  decorate(editor, config) {
-    var embedBlockTheme = config.theme.embedBlock || {};
-    var className = {
-      base: embedBlockTheme.base || '',
-      focus: embedBlockTheme.focus || ''
-    };
-    return /*#__PURE__*/React.createElement(TweetComponent, {
-      className: className,
-      format: this.__format,
-      loadingComponent: "Loading...",
-      nodeKey: this.getKey(),
-      tweetID: this.__id
-    });
-  }
-
-  isTopLevel() {
-    return true;
-  }
-
-}
-function $createTweetNode(tweetID) {
-  return new TweetNode(tweetID);
-}
-function $isTweetNode(node) {
-  return node instanceof TweetNode;
-}
-
 class TypeaheadNode extends lexical.TextNode {
   static clone(node) {
     return new TypeaheadNode(node.__text, node.__key);
@@ -1562,7 +1396,7 @@ function $createYouTubeNode(videoID) {
  * LICENSE file in the root directory of this source tree.
  *
  */
-var PlaygroundNodes = [richText.HeadingNode, list.ListNode, list.ListItemNode, richText.QuoteNode, code.CodeNode, table.TableNode, table.TableCellNode, table.TableRowNode, hashtag.HashtagNode, code.CodeHighlightNode, link.AutoLinkNode, link.LinkNode, overflow.OverflowNode, PollNode, StickyNode, ImageNode, MentionNode, EmojiNode, TypeaheadNode, KeywordNode, LexicalHorizontalRuleNode.HorizontalRuleNode, TweetNode, YouTubeNode, mark.MarkNode];
+var PlaygroundNodes = [richText.HeadingNode, list.ListNode, list.ListItemNode, richText.QuoteNode, code.CodeNode, table.TableNode, table.TableCellNode, table.TableRowNode, hashtag.HashtagNode, code.CodeHighlightNode, link.AutoLinkNode, link.LinkNode, overflow.OverflowNode, PollNode, StickyNode, ImageNode, MentionNode, EmojiNode, TypeaheadNode, KeywordNode, LexicalHorizontalRuleNode.HorizontalRuleNode, YouTubeNode, mark.MarkNode];
 
 var toolbar = {
 	alignDropdown: {
@@ -2630,23 +2464,6 @@ var IMAGE = {
   },
   trigger: ')',
   type: 'text-match'
-};
-var TWEET = {
-  dependencies: [TweetNode],
-  export: node => {
-    if (!$isTweetNode(node)) {
-      return null;
-    }
-
-    return "<tweet id=\"" + node.getId() + "\" />";
-  },
-  regExp: /<tweet id="([^"]+?)"\s?\/>\s?$/,
-  replace: (textNode, _1, match) => {
-    var [, id] = match;
-    var tweetNode = $createTweetNode(id);
-    textNode.replace(tweetNode);
-  },
-  type: 'element'
 }; // Very primitive table setup
 
 var TABLE_ROW_REG_EXP = /^(?:\|)(.+)(?:\|)\s?$/;
@@ -2773,7 +2590,7 @@ var mapToTableCells = textContent => {
   return match[1].split('|').map(text => createTableCell(text));
 };
 
-var PLAYGROUND_TRANSFORMERS = [TABLE, HR, IMAGE, TWEET, markdown.CHECK_LIST, ...markdown.ELEMENT_TRANSFORMERS, ...markdown.TEXT_FORMAT_TRANSFORMERS, ...markdown.TEXT_MATCH_TRANSFORMERS];
+var PLAYGROUND_TRANSFORMERS = [TABLE, HR, IMAGE, markdown.CHECK_LIST, ...markdown.ELEMENT_TRANSFORMERS, ...markdown.TEXT_FORMAT_TRANSFORMERS, ...markdown.TEXT_MATCH_TRANSFORMERS];
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -4393,42 +4210,6 @@ function PollPlugin() {
  * LICENSE file in the root directory of this source tree.
  *
  */
-var INSERT_TWEET_COMMAND = /*#__PURE__*/lexical.createCommand();
-function TwitterPlugin() {
-  var [editor] = LexicalComposerContext.useLexicalComposerContext();
-  React.useEffect(() => {
-    if (!editor.hasNodes([TweetNode])) {
-      throw new Error('TwitterPlugin: TweetNode not registered on editor');
-    }
-
-    return editor.registerCommand(INSERT_TWEET_COMMAND, payload => {
-      var selection = lexical.$getSelection();
-
-      if (lexical.$isRangeSelection(selection)) {
-        var focusNode = selection.focus.getNode();
-
-        if (focusNode !== null) {
-          var tweetNode = $createTweetNode(payload);
-          selection.focus.getNode().getTopLevelElementOrThrow().insertAfter(tweetNode);
-          var paragraphNode = lexical.$createParagraphNode();
-          tweetNode.insertAfter(paragraphNode);
-          paragraphNode.select();
-        }
-      }
-
-      return true;
-    }, lexical.COMMAND_PRIORITY_EDITOR);
-  }, [editor]);
-  return null;
-}
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
 var INSERT_YOUTUBE_COMMAND = /*#__PURE__*/lexical.createCommand();
 function YouTubePlugin() {
   var [editor] = LexicalComposerContext.useLexicalComposerContext();
@@ -5242,41 +5023,10 @@ function InsertPollDialog(_ref3) {
   }, "Confirm")));
 }
 
-var VALID_TWITTER_URL = /twitter.com\/[0-9a-zA-Z]{1,20}\/status\/([0-9]*)/g;
-
-function InsertTweetDialog(_ref4) {
-  var {
-    activeEditor,
-    onClose
-  } = _ref4;
-  var [text, setText] = React.useState('');
-
-  var onClick = () => {
-    var _text$split, _text$split$, _text$split$$split;
-
-    var tweetID = (_text$split = text.split('status/')) == null ? void 0 : (_text$split$ = _text$split[1]) == null ? void 0 : (_text$split$$split = _text$split$.split('?')) == null ? void 0 : _text$split$$split[0];
-    activeEditor.dispatchCommand(INSERT_TWEET_COMMAND, tweetID);
-    onClose();
-  };
-
-  var isDisabled = text === '' || !text.match(VALID_TWITTER_URL);
-  return /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement(TextInput, {
-    label: "Tweet URL",
-    placeholder: "i.e. https://twitter.com/jack/status/20",
-    onChange: setText,
-    value: text
-  }), /*#__PURE__*/React__default.createElement("div", {
-    className: "ToolbarPlugin__dialogActions"
-  }, /*#__PURE__*/React__default.createElement(Button, {
-    disabled: isDisabled,
-    onClick: onClick
-  }, "Confirm")));
-}
-
-function InsertImageUriDialogBody$1(_ref5) {
+function InsertImageUriDialogBody$1(_ref4) {
   var {
     onClick: _onClick
-  } = _ref5;
+  } = _ref4;
   var [src, setSrc] = React.useState('');
   var [altText, setAltText] = React.useState('');
   var isDisabled = src === '';
@@ -5304,10 +5054,10 @@ function InsertImageUriDialogBody$1(_ref5) {
   }, "Confirm")));
 }
 
-function InsertImageUploadedDialogBody$1(_ref6) {
+function InsertImageUploadedDialogBody$1(_ref5) {
   var {
     onClick: _onClick2
-  } = _ref6;
+  } = _ref5;
   var [src, setSrc] = React.useState('');
   var [altText, setAltText] = React.useState('');
   var isDisabled = src === '';
@@ -5349,11 +5099,11 @@ function InsertImageUploadedDialogBody$1(_ref6) {
   }, "Confirm")));
 }
 
-function InsertYouTubeDialog(_ref7) {
+function InsertYouTubeDialog(_ref6) {
   var {
     activeEditor,
     onClose
-  } = _ref7;
+  } = _ref6;
   var [text, setText] = React.useState('');
 
   var onClick = () => {
@@ -5382,7 +5132,7 @@ function InsertYouTubeDialog(_ref7) {
   }, "Confirm")));
 }
 
-var InsertDropdown = _ref8 => {
+var InsertDropdown = _ref7 => {
   var {
     enableTable = true,
     enableImage = {
@@ -5390,17 +5140,16 @@ var InsertDropdown = _ref8 => {
       maxWidth: 1000
     },
     enableYoutube = false,
-    enableTwitter = false,
     enablePoll = false,
     enableHorizontalRule = false,
     enableStickyNote = false
-  } = _ref8;
+  } = _ref7;
   var {
     initialEditor,
     activeEditor
   } = React.useContext(EditorContext);
   var [modal, showModal] = useModal();
-  return /*#__PURE__*/React__default.createElement("div", null, enableTable && /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement(LexicalTablePlugin.TablePlugin, null), /*#__PURE__*/React__default.createElement(TableActionMenuPlugin, null), /*#__PURE__*/React__default.createElement(TableCellResizerPlugin, null)), enableYoutube && /*#__PURE__*/React__default.createElement(YouTubePlugin, null), enableTwitter && /*#__PURE__*/React__default.createElement(TwitterPlugin, null), enablePoll && /*#__PURE__*/React__default.createElement(PollPlugin, null), enableImage.enable && /*#__PURE__*/React__default.createElement(ImagesPlugin, {
+  return /*#__PURE__*/React__default.createElement("div", null, enableTable && /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement(LexicalTablePlugin.TablePlugin, null), /*#__PURE__*/React__default.createElement(TableActionMenuPlugin, null), /*#__PURE__*/React__default.createElement(TableCellResizerPlugin, null)), enableYoutube && /*#__PURE__*/React__default.createElement(YouTubePlugin, null), enablePoll && /*#__PURE__*/React__default.createElement(PollPlugin, null), enableImage.enable && /*#__PURE__*/React__default.createElement(ImagesPlugin, {
     maxWidth: enableImage.maxWidth
   }), enableHorizontalRule && /*#__PURE__*/React__default.createElement(HorizontalRulePlugin, null), /*#__PURE__*/React__default.createElement(DropDown, {
     buttonClassName: "verbum-toolbar-item spaced",
@@ -5456,20 +5205,7 @@ var InsertDropdown = _ref8 => {
     className: "verbum-icon verbum-poll"
   }), /*#__PURE__*/React__default.createElement("span", {
     className: "verbum-text"
-  }, "Poll")), enableTwitter && /*#__PURE__*/React__default.createElement("button", {
-    onClick: () => {
-      showModal('Insert Tweet', onClose => /*#__PURE__*/React__default.createElement(InsertTweetDialog, {
-        activeEditor: activeEditor,
-        onClose: onClose
-      }));
-    },
-    className: "verbum-item",
-    type: "button"
-  }, /*#__PURE__*/React__default.createElement("i", {
-    className: "verbum-icon verbum-tweet"
-  }), /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-text"
-  }, "Tweet")), enableYoutube && /*#__PURE__*/React__default.createElement("button", {
+  }, "Poll")), enableYoutube && /*#__PURE__*/React__default.createElement("button", {
     onClick: () => {
       showModal('Insert YouTube Video', onClose => /*#__PURE__*/React__default.createElement(InsertYouTubeDialog, {
         activeEditor: activeEditor,
