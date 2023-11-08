@@ -25,6 +25,7 @@ import Divider from './ui/Divider';
 import EditorContext from './context/EditorContext';
 
 export * from "./plugins/ImagesPlugin"
+export * from "./nodes"
 
 export {
     EditorComposer,
