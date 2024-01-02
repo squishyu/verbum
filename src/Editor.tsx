@@ -6,26 +6,24 @@
  *
  */
 
-import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
-import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin';
-import { ClearEditorPlugin } from '@lexical/react/LexicalClearEditorPlugin';
-import { HashtagPlugin } from '@lexical/react/LexicalHashtagPlugin';
-import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
-import { ListPlugin } from '@lexical/react/LexicalListPlugin';
-import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
-import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
+import {AutoFocusPlugin} from '@lexical/react/LexicalAutoFocusPlugin';
+import {CheckListPlugin} from '@lexical/react/LexicalCheckListPlugin';
+import {ClearEditorPlugin} from '@lexical/react/LexicalClearEditorPlugin';
+import {HashtagPlugin} from '@lexical/react/LexicalHashtagPlugin';
+import {LinkPlugin} from '@lexical/react/LexicalLinkPlugin';
+import {ListPlugin} from '@lexical/react/LexicalListPlugin';
+import {RichTextPlugin} from '@lexical/react/LexicalRichTextPlugin';
+import {OnChangePlugin} from '@lexical/react/LexicalOnChangePlugin';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
-import React, { ReactNode, useEffect, useState } from 'react';
-import { useRef } from 'react';
+import React, {ReactNode, useEffect, useRef, useState} from 'react';
 
-import { useSettings } from './context/SettingsContext';
-import { useSharedHistoryContext } from './context/SharedHistoryContext';
+import {useSettings} from './context/SettingsContext';
+import {useSharedHistoryContext} from './context/SharedHistoryContext';
 import ActionsPlugin from './plugins/ActionsPlugin';
 import AutoLinkPlugin from './plugins/AutoLinkPlugin';
 import CharacterStylesPopupPlugin from './plugins/CharacterStylesPopupPlugin';
 import ClickableLinkPlugin from './plugins/ClickableLinkPlugin';
 import CodeHighlightPlugin from './plugins/CodeHighlightPlugin';
-import EmojisPlugin from './plugins/EmojisPlugin';
 import KeywordsPlugin from './plugins/KeywordsPlugin';
 import ListMaxIndentLevelPlugin from './plugins/ListMaxIndentLevelPlugin';
 import MarkdownShortcutPlugin from './plugins/MarkdownShortcutPlugin';
@@ -33,98 +31,100 @@ import SpeechToTextPlugin from './plugins/SpeechToTextPlugin';
 import TabFocusPlugin from './plugins/TabFocusPlugin';
 import ContentEditable from './ui/ContentEditable';
 import Placeholder from './ui/Placeholder';
-import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
+import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import EditorContext from './context/EditorContext';
-import { LexicalEditor } from 'lexical';
-import { useTranslation } from 'react-i18next';
+import {LexicalEditor} from 'lexical';
+import {useTranslation} from 'react-i18next';
 import DragDropPaste from './plugins/DragDropPastePlugin';
 
 interface IEditorProps {
-  children?: ReactNode;
-  hashtagsEnabled?: boolean;
-  autoLinkEnabled?: boolean;
-  emojisEnabled?: boolean;
-  actionsEnabled?: boolean;
-  placeholder?: string;
-  listMaxIndent?: number;
-  isEditable?: boolean;
-  locale?: 'en' | 'fr' | 'ptBr' | 'ru' | null;
-  onChange?: (editorState: string, editorInstance?: LexicalEditor) => void;
+    children?: ReactNode
+    hashtagsEnabled?: boolean
+    autoFocusEnabled?: boolean
+    autoLinkEnabled?: boolean
+    emojisEnabled?: boolean
+    actionsEnabled?: boolean
+    speechToTextEnabled?: boolean
+    placeholder?: string
+    listMaxIndent?: number
+    isEditable?: boolean
+    locale?: 'en' | 'fr' | 'ptBr' | 'ru' | null
+    onChange?: (editorState: string, editorInstance?: LexicalEditor) => void
 }
 
-const Editor = ({
-  children,
-  hashtagsEnabled = false,
-  autoLinkEnabled = false,
-  emojisEnabled = false,
-  actionsEnabled = false,
-  listMaxIndent = 7,
-  placeholder = '',
-  isEditable = true,
-  locale = null,
-  onChange,
-}: IEditorProps) => {
-  const [editor] = useLexicalComposerContext();
-  const [activeEditor, setActiveEditor] = useState(editor);
+const Editor = (
+    {
+        children,
+        hashtagsEnabled = false,
+        autoFocusEnabled = false,
+        autoLinkEnabled = false,
+        emojisEnabled = false,
+        actionsEnabled = false,
+        speechToTextEnabled = false,
+        listMaxIndent = 7,
+        placeholder = '',
+        isEditable = true,
+        locale = null,
+        onChange,
+    }: IEditorProps
+) => {
+    const [editor] = useLexicalComposerContext();
+    const [activeEditor, setActiveEditor] = useState(editor);
 
-  const editorStateRef = useRef(null);
-  const { historyState } = useSharedHistoryContext();
-  const {
-    settings: { isRichText },
-  } = useSettings();
-  const placeholderComponent = <Placeholder>{placeholder}</Placeholder>;
+    const editorStateRef = useRef(null);
+    const {historyState} = useSharedHistoryContext();
+    const {
+        settings: {isRichText},
+    } = useSettings();
+    const placeholderComponent = <Placeholder>{placeholder}</Placeholder>;
 
-  const { i18n } = useTranslation();
+    const {i18n} = useTranslation();
 
-  useEffect(() => {
-    editor.setEditable(isEditable);
+    useEffect(() => {
+        editor.setEditable(isEditable)
 
-    if (locale) i18n.changeLanguage(locale);
-  }, []);
+        if (locale) i18n.changeLanguage(locale)
+    }, [])
 
-  return (
-    <EditorContext.Provider
-      value={{ initialEditor: editor, activeEditor, setActiveEditor }}
-    >
-      {children}
-      <div className={`verbum-editor-container`}>
-        <AutoFocusPlugin />
-        <ClearEditorPlugin />
-        {hashtagsEnabled && <HashtagPlugin />}
-        <KeywordsPlugin />
-        <SpeechToTextPlugin />
-        <DragDropPaste />
-        {autoLinkEnabled && <AutoLinkPlugin />}
+    return <EditorContext.Provider value={{initialEditor: editor, activeEditor, setActiveEditor}}>
+        {children}
+        <div className={`verbum-editor-container`}>
+            {autoFocusEnabled && <AutoFocusPlugin/>}
+            <ClearEditorPlugin/>
+            {hashtagsEnabled && <HashtagPlugin/>}
+            <KeywordsPlugin/>
+            {speechToTextEnabled && <SpeechToTextPlugin/>}
+            <DragDropPaste/>
+            {autoLinkEnabled && <AutoLinkPlugin/>}
 
-        <>
-          <RichTextPlugin
-            contentEditable={<ContentEditable />}
-            placeholder={placeholderComponent}
-            ErrorBoundary={LexicalErrorBoundary}
-          />
-          <OnChangePlugin
-            onChange={(editorState) => {
-              onChange?.(JSON.stringify(editorState), activeEditor);
-              return (editorStateRef.current = editorState);
-            }}
-          />
-          <MarkdownShortcutPlugin />
-          <CodeHighlightPlugin />
-          <ListPlugin />
-          <CheckListPlugin />
-          <ListMaxIndentLevelPlugin maxDepth={listMaxIndent} />
-          <LinkPlugin />
-          <ClickableLinkPlugin />
-          <CharacterStylesPopupPlugin />
-          <TabFocusPlugin />
-        </>
+            <>
+                <RichTextPlugin
+                    contentEditable={<ContentEditable/>}
+                    placeholder={placeholderComponent}
+                    ErrorBoundary={LexicalErrorBoundary}
+                />
+                <OnChangePlugin
+                    onChange={(editorState) => {
+                        onChange?.(JSON.stringify(editorState), activeEditor);
+                        return (editorStateRef.current = editorState);
+                    }}
+                />
+                <MarkdownShortcutPlugin/>
+                <CodeHighlightPlugin/>
+                <ListPlugin/>
+                <CheckListPlugin/>
+                <ListMaxIndentLevelPlugin maxDepth={listMaxIndent}/>
+                <LinkPlugin/>
+                <ClickableLinkPlugin/>
+                <CharacterStylesPopupPlugin/>
+                <TabFocusPlugin/>
+            </>
 
-        <HistoryPlugin externalHistoryState={historyState} />
-        {actionsEnabled && <ActionsPlugin isRichText={isRichText} />}
-      </div>
+            <HistoryPlugin externalHistoryState={historyState}/>
+            {actionsEnabled && <ActionsPlugin isRichText={isRichText}/>}
+        </div>
     </EditorContext.Provider>
-  );
-};
+}
 
-export default Editor;
+export default Editor
