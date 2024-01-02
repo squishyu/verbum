@@ -4008,9 +4008,11 @@ var Editor = _ref => {
   var {
     children,
     hashtagsEnabled = false,
+    autoFocusEnabled = false,
     autoLinkEnabled = false,
     emojisEnabled = false,
     actionsEnabled = false,
+    speechToTextEnabled = false,
     listMaxIndent = 7,
     placeholder = '',
     isEditable = true,
@@ -4044,7 +4046,7 @@ var Editor = _ref => {
     }
   }, children, /*#__PURE__*/React__default.createElement("div", {
     className: "verbum-editor-container"
-  }, /*#__PURE__*/React__default.createElement(AutoFocusPlugin, null), /*#__PURE__*/React__default.createElement(ClearEditorPlugin, null), hashtagsEnabled && /*#__PURE__*/React__default.createElement(HashtagPlugin, null), /*#__PURE__*/React__default.createElement(KeywordsPlugin, null), /*#__PURE__*/React__default.createElement(SpeechToTextPlugin$1, null), /*#__PURE__*/React__default.createElement(DragDropPaste, null), autoLinkEnabled && /*#__PURE__*/React__default.createElement(LexicalAutoLinkPlugin, null), /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement(RichTextPlugin, {
+  }, autoFocusEnabled && /*#__PURE__*/React__default.createElement(AutoFocusPlugin, null), /*#__PURE__*/React__default.createElement(ClearEditorPlugin, null), hashtagsEnabled && /*#__PURE__*/React__default.createElement(HashtagPlugin, null), /*#__PURE__*/React__default.createElement(KeywordsPlugin, null), speechToTextEnabled && /*#__PURE__*/React__default.createElement(SpeechToTextPlugin$1, null), /*#__PURE__*/React__default.createElement(DragDropPaste, null), autoLinkEnabled && /*#__PURE__*/React__default.createElement(LexicalAutoLinkPlugin, null), /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement(RichTextPlugin, {
     contentEditable: /*#__PURE__*/React__default.createElement(LexicalContentEditable, null),
     placeholder: placeholderComponent,
     ErrorBoundary: LexicalErrorBoundary

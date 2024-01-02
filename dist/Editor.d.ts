@@ -10,14 +10,16 @@ import { LexicalEditor } from 'lexical';
 interface IEditorProps {
     children?: ReactNode;
     hashtagsEnabled?: boolean;
+    autoFocusEnabled?: boolean;
     autoLinkEnabled?: boolean;
     emojisEnabled?: boolean;
     actionsEnabled?: boolean;
+    speechToTextEnabled?: boolean;
     placeholder?: string;
     listMaxIndent?: number;
     isEditable?: boolean;
     locale?: 'en' | 'fr' | 'ptBr' | 'ru' | null;
     onChange?: (editorState: string, editorInstance?: LexicalEditor) => void;
 }
-declare const Editor: ({ children, hashtagsEnabled, autoLinkEnabled, emojisEnabled, actionsEnabled, listMaxIndent, placeholder, isEditable, locale, onChange, }: IEditorProps) => JSX.Element;
+declare const Editor: ({ children, hashtagsEnabled, autoFocusEnabled, autoLinkEnabled, emojisEnabled, actionsEnabled, speechToTextEnabled, listMaxIndent, placeholder, isEditable, locale, onChange, }: IEditorProps) => JSX.Element;
 export default Editor;
