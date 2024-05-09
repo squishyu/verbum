@@ -5657,7 +5657,8 @@ var ToolbarPlugin = _ref => {
       setFontSize(selection.$getSelectionStyleValueForProperty(selection$1, 'font-size', defaultFontSize));
       setFontColor(selection.$getSelectionStyleValueForProperty(selection$1, 'color', defaultFontColor));
       setBgColor(selection.$getSelectionStyleValueForProperty(selection$1, 'background-color', defaultBgColor));
-      setFontFamily(selection.$getSelectionStyleValueForProperty(selection$1, 'font-family', defaultFontFamily));
+      var font = selection.$getSelectionStyleValueForProperty(selection$1, 'font-family');
+      if (font) setFontFamily(font);
     }
   }, [activeEditor]);
   React.useEffect(() => {

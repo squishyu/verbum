@@ -5722,7 +5722,8 @@ var ToolbarPlugin = _ref => {
       setFontSize($getSelectionStyleValueForProperty(selection, 'font-size', defaultFontSize));
       setFontColor($getSelectionStyleValueForProperty(selection, 'color', defaultFontColor));
       setBgColor($getSelectionStyleValueForProperty(selection, 'background-color', defaultBgColor));
-      setFontFamily($getSelectionStyleValueForProperty(selection, 'font-family', defaultFontFamily));
+      var font = $getSelectionStyleValueForProperty(selection, 'font-family');
+      if (font) setFontFamily(font);
     }
   }, [activeEditor]);
   useEffect(() => {
