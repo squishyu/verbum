@@ -5685,6 +5685,27 @@ var ToolbarPlugin = _ref => {
     }, lexical.COMMAND_PRIORITY_CRITICAL));
   }, [activeEditor, updateToolbar]);
   var applyStyleText = React.useCallback(styles => {
+    Object.entries(styles).forEach(_ref3 => {
+      var [key, value] = _ref3;
+
+      switch (key) {
+        case "font-family":
+          setFontFamily(value);
+          break;
+
+        case "font-size":
+          setFontSize(value);
+          break;
+
+        case "background-color":
+          setBgColor(value);
+          break;
+
+        case "color":
+          setFontColor(value);
+          break;
+      }
+    });
     activeEditor.update(() => {
       var selection$1 = lexical.$getSelection();
 
