@@ -217,6 +217,23 @@ const ToolbarPlugin = ({
 
     const applyStyleText = useCallback(
         (styles: Record<string, string>) => {
+            Object.entries(styles).forEach(([ key, value ]) => {
+                switch ( key ) {
+                    case "font-family":
+                        setFontFamily(value)
+                        break
+                    case "font-size":
+                        setFontSize(value)
+                        break
+                    case "background-color":
+                        setBgColor(value)
+                        break
+                    case "color":
+                        setFontColor(value)
+                        break
+                }
+            })
+
             activeEditor.update(() => {
                 const selection = $getSelection();
                 if ($isRangeSelection(selection)) {
