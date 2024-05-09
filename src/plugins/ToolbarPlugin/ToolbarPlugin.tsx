@@ -172,13 +172,8 @@ const ToolbarPlugin = ({
                 )
             );
 
-            setFontFamily(
-                $getSelectionStyleValueForProperty(
-                    selection,
-                    'font-family',
-                    defaultFontFamily
-                )
-            );
+            const font = $getSelectionStyleValueForProperty(selection, 'font-family');
+            if ( font ) setFontFamily(font);
         }
     }, [activeEditor]);
 
