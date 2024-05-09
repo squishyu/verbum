@@ -27,7 +27,6 @@ import {getSelectedNode} from '../../utils/node.util';
 import EditorContext from '../../context/EditorContext';
 import ToolbarContext from '../../context/ToolbarContext';
 import AlignDropdown from './components/AlignDropdown';
-import InsertDropdown from './components/InsertDropdown';
 import './ToolbarPlugin.css';
 import UndoButton from './components/UndoButton';
 import RedoButton from './components/RedoButton';
@@ -55,16 +54,13 @@ const CODE_LANGUAGE_MAP = {
     text: 'plain',
 };
 
-interface IToolbarProps {
-    children?: React.ReactElement | React.ReactElement[];
+type ToolbarProps = {
+    children?: React.ReactElement | React.ReactElement[]
     defaultFontSize?: string /** The default selected font size in the toolbar */
-    ;
     defaultFontColor?: string /** The default selected font color in the toolbar */
-    ;
     defaultBgColor?: string /** The default selected background color in the toolbar */
-    ;
     defaultFontFamily?: string /** The default selected font family in the toolbar */
-    ;
+    disableBlockTypeSelect?: boolean
 }
 
 const ToolbarPlugin = ({
@@ -73,8 +69,8 @@ const ToolbarPlugin = ({
                            defaultFontColor = '#000',
                            defaultBgColor = '#fff',
                            defaultFontFamily = 'Arial',
-                       }: IToolbarProps) => {
-    const [insertExists, InsertComponent] = useChild(children, InsertDropdown);
+                           disableBlockTypeSelect
+                       }: ToolbarProps) => {
     const [alignExists, AlignComponent] = useChild(children, AlignDropdown);
 
     const {initialEditor, activeEditor, setActiveEditor} =
@@ -173,7 +169,7 @@ const ToolbarPlugin = ({
             );
 
             const font = $getSelectionStyleValueForProperty(selection, 'font-family');
-            if ( font ) setFontFamily(font);
+            if (font) setFontFamily(font);
         }
     }, [activeEditor]);
 
@@ -217,8 +213,8 @@ const ToolbarPlugin = ({
 
     const applyStyleText = useCallback(
         (styles: Record<string, string>) => {
-            Object.entries(styles).forEach(([ key, value ]) => {
-                switch ( key ) {
+            Object.entries(styles).forEach(([key, value]) => {
+                switch (key) {
                     case "font-family":
                         setFontFamily(value)
                         break
@@ -252,54 +248,45 @@ const ToolbarPlugin = ({
         }
     }, [initialEditor, isLink]);
 
-    return (
-        <ToolbarContext.Provider
-            value={{
-                isRTL,
-                canUndo,
-                canRedo,
-                fontFamily,
-                fontSize,
-                fontColor,
-                bgColor,
-                isBold,
-                isItalic,
-                isUnderline,
-                isCode,
-                isLink,
-                applyStyleText,
-                insertLink,
-                isStrikethrough,
-                isSubscript,
-                isSuperscript,
-                selectedElementKey,
-                codeLanguage,
-                blockType,
-            }}
-        >
-            <div className="verbum-toolbar">
-                <UndoButton/>
-                <RedoButton/>
+    return <ToolbarContext.Provider
+        value={{
+            isRTL,
+            canUndo,
+            canRedo,
+            fontFamily,
+            fontSize,
+            fontColor,
+            bgColor,
+            isBold,
+            isItalic,
+            isUnderline,
+            isCode,
+            isLink,
+            applyStyleText,
+            insertLink,
+            isStrikethrough,
+            isSubscript,
+            isSuperscript,
+            selectedElementKey,
+            codeLanguage,
+            blockType,
+        }}
+    >
+        <div className="verbum-toolbar">
+            <UndoButton/>
+            <RedoButton/>
+            <Divider/>
+            {!disableBlockTypeSelect && supportedBlockTypes.has(blockType) && activeEditor === initialEditor && <>
+                <BlockFormatDropdown/>
                 <Divider/>
-                {supportedBlockTypes.has(blockType) &&
-                    activeEditor === initialEditor && (
-                        <>
-                            <BlockFormatDropdown/>
-                            <Divider/>
-                        </>
-                    )}
-                {blockType === 'code' ? (
-                    <>
-                        <CodeLanguageDropdown/>
-                        <Divider/>
-                        {alignExists && AlignComponent}
-                    </>
-                ) : (
-                    <>{children}</>
-                )}
-            </div>
-        </ToolbarContext.Provider>
-    );
+            </>}
+            {blockType === 'code' ? <>
+                <CodeLanguageDropdown/>
+                <Divider/>
+                {alignExists && AlignComponent}
+            </> : <>{children}</>}
+        </div>
+    </ToolbarContext.Provider>;
 };
 
 export default ToolbarPlugin;

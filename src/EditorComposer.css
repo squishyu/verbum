@@ -1333,7 +1333,6 @@ button.verbum-action-button:disabled {
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
   border-radius: 8px;
   transition: opacity 0.5s;
-  height: 44px;
 }
 
 .verbum-character-style-popup button.verbum-popup-item {
