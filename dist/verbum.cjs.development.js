@@ -50,8 +50,8 @@ require('@lexical/text');
 var useLexicalTextEntity = require('@lexical/react/useLexicalTextEntity');
 var LexicalMarkdownShortcutPlugin = require('@lexical/react/LexicalMarkdownShortcutPlugin');
 var useChild = _interopDefault(require('use-child'));
-var LexicalTablePlugin = require('@lexical/react/LexicalTablePlugin');
 var LexicalTypeaheadMenuPlugin = require('@lexical/react/LexicalTypeaheadMenuPlugin');
+var LexicalTablePlugin = require('@lexical/react/LexicalTablePlugin');
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
   try {
@@ -4188,6 +4188,1353 @@ var AlignDropdown = () => {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
+ */
+var IS_APPLE = CAN_USE_DOM && /*#__PURE__*/ /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+// export const IS_WINDOWS: boolean = CAN_USE_DOM && /Win/.test(navigator.platform);
+// export const IS_CHROME: boolean = CAN_USE_DOM && /^(?=.*Chrome).*/i.test(navigator.userAgent);
+// export const canUseTextInputEvent: boolean = CAN_USE_DOM && 'TextEvent' in window && !documentMode;
+
+var UndoButton = () => {
+  var {
+    canUndo
+  } = React.useContext(ToolbarContext);
+  var {
+    activeEditor
+  } = React.useContext(EditorContext);
+  var {
+    t
+  } = reactI18next.useTranslation('toolbar');
+  return /*#__PURE__*/React.createElement("button", {
+    disabled: !canUndo,
+    onClick: () => {
+      activeEditor.dispatchCommand(lexical.UNDO_COMMAND, undefined);
+    },
+    title: IS_APPLE ? t('toolbar:undoButton.Title') + " (\u2318Z)" : t('toolbar:undoButton.Title') + " (Ctrl+Z)",
+    className: "verbum-toolbar-item spaced",
+    "aria-label": t('toolbar:undoButton.Description'),
+    type: "button"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "verbum-format verbum-undo"
+  }));
+};
+
+var RedoButton = () => {
+  var {
+    canRedo
+  } = React.useContext(ToolbarContext);
+  var {
+    activeEditor
+  } = React.useContext(EditorContext);
+  var {
+    t
+  } = reactI18next.useTranslation('toolbar');
+  return /*#__PURE__*/React.createElement("button", {
+    disabled: !canRedo,
+    onClick: () => {
+      activeEditor.dispatchCommand(lexical.REDO_COMMAND, undefined);
+    },
+    title: IS_APPLE ? t('toolbar:redoButton.Title') + " (\u2318Y)" : t('toolbar:redoButton.Title') + " (Ctrl+Y)",
+    className: "verbum-toolbar-item",
+    "aria-label": t('toolbar:redoButton.Description'),
+    type: "button"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "verbum-format verbum-redo"
+  }));
+};
+
+var Select = _ref => {
+  var {
+    onChange,
+    className,
+    options,
+    value
+  } = _ref;
+  return /*#__PURE__*/React__default.createElement("select", {
+    className: className,
+    onChange: onChange,
+    value: value
+  }, options.map(_ref2 => {
+    var [option, text] = _ref2;
+    return /*#__PURE__*/React__default.createElement("option", {
+      key: option,
+      value: option
+    }, text);
+  }));
+};
+
+var CODE_LANGUAGE_OPTIONS = [['', '- Select language -'], ['c', 'C'], ['clike', 'C-like'], ['css', 'CSS'], ['html', 'HTML'], ['js', 'JavaScript'], ['markdown', 'Markdown'], ['objc', 'Objective-C'], ['plain', 'Plain Text'], ['py', 'Python'], ['rust', 'Rust'], ['sql', 'SQL'], ['swift', 'Swift'], ['xml', 'XML']];
+
+var CodeLanguageDropdown = () => {
+  var {
+    activeEditor
+  } = React.useContext(EditorContext);
+  var {
+    selectedElementKey,
+    codeLanguage
+  } = React.useContext(ToolbarContext);
+  var onCodeLanguageSelect = React.useCallback(e => {
+    activeEditor.update(() => {
+      if (selectedElementKey !== null) {
+        var node = lexical.$getNodeByKey(selectedElementKey);
+
+        if (code.$isCodeNode(node)) {
+          console.log(e.target.value);
+          node.setLanguage(e.target.value);
+        }
+      }
+    });
+  }, [activeEditor, selectedElementKey]);
+  return /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement(Select, {
+    className: "verbum-toolbar-item code-language",
+    onChange: onCodeLanguageSelect,
+    options: CODE_LANGUAGE_OPTIONS,
+    value: codeLanguage
+  }), /*#__PURE__*/React__default.createElement("i", {
+    className: "verbum-chevron-down inside"
+  }));
+};
+
+var BlockFormatDropdown = () => {
+  var {
+    initialEditor
+  } = React.useContext(EditorContext);
+  var {
+    blockType
+  } = React.useContext(ToolbarContext);
+  var {
+    t
+  } = reactI18next.useTranslation('toolbar');
+
+  var formatParagraph = () => {
+    if (blockType !== 'paragraph') {
+      initialEditor.update(() => {
+        var selection$1 = lexical.$getSelection();
+
+        if (lexical.$isRangeSelection(selection$1)) {
+          selection.$wrapNodes(selection$1, () => lexical.$createParagraphNode());
+        }
+      });
+    }
+  };
+
+  var formatHeading = headingSize => {
+    if (blockType !== headingSize) {
+      initialEditor.update(() => {
+        var selection$1 = lexical.$getSelection();
+
+        if (lexical.$isRangeSelection(selection$1)) {
+          selection.$wrapNodes(selection$1, () => richText.$createHeadingNode(headingSize));
+        }
+      });
+    }
+  };
+
+  var formatBulletList = () => {
+    if (blockType !== 'bullet') {
+      initialEditor.dispatchCommand(list.INSERT_UNORDERED_LIST_COMMAND, undefined);
+    } else {
+      initialEditor.dispatchCommand(list.REMOVE_LIST_COMMAND, undefined);
+    }
+  };
+
+  var formatCheckList = () => {
+    if (blockType !== 'check') {
+      initialEditor.dispatchCommand(list.INSERT_CHECK_LIST_COMMAND, undefined);
+    } else {
+      initialEditor.dispatchCommand(list.REMOVE_LIST_COMMAND, undefined);
+    }
+  };
+
+  var formatNumberedList = () => {
+    if (blockType !== 'number') {
+      initialEditor.dispatchCommand(list.INSERT_ORDERED_LIST_COMMAND, undefined);
+    } else {
+      initialEditor.dispatchCommand(list.REMOVE_LIST_COMMAND, undefined);
+    }
+  };
+
+  var formatQuote = () => {
+    if (blockType !== 'quote') {
+      initialEditor.update(() => {
+        var selection$1 = lexical.$getSelection();
+
+        if (lexical.$isRangeSelection(selection$1)) {
+          selection.$wrapNodes(selection$1, () => richText.$createQuoteNode());
+        }
+      });
+    }
+  };
+
+  var formatCode = () => {
+    if (blockType !== 'code') {
+      initialEditor.update(() => {
+        var selection$1 = lexical.$getSelection();
+
+        if (lexical.$isRangeSelection(selection$1)) {
+          if (selection$1.isCollapsed()) {
+            selection.$wrapNodes(selection$1, () => code.$createCodeNode());
+          } else {
+            var textContent = selection$1.getTextContent();
+            var codeNode = code.$createCodeNode();
+            selection$1.removeText();
+            selection$1.insertNodes([codeNode]);
+            selection$1.insertRawText(textContent);
+          }
+        }
+      });
+    }
+  };
+
+  return /*#__PURE__*/React__default.createElement(DropDown, {
+    buttonLabel: t("blockFormatDropdown." + blockType),
+    buttonAriaLabel: t('toolbar:blockFormatDropdown.Description'),
+    buttonClassName: "verbum-toolbar-item verbum-block-controls",
+    buttonIconClassName: 'icon block-type ' + blockType
+  }, /*#__PURE__*/React__default.createElement("button", {
+    className: "verbum-item",
+    onClick: formatParagraph,
+    type: "button"
+  }, /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-icon verbum-paragraph"
+  }), /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-text"
+  }, t('toolbar:blockFormatDropdown.paragraph')), blockType === 'paragraph' && /*#__PURE__*/React__default.createElement("span", {
+    className: "active"
+  })), /*#__PURE__*/React__default.createElement("button", {
+    className: "verbum-item",
+    onClick: () => formatHeading('h1'),
+    type: "button"
+  }, /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-icon verbum-h1"
+  }), /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-text"
+  }, t('toolbar:blockFormatDropdown.h1')), blockType === 'h1' && /*#__PURE__*/React__default.createElement("span", {
+    className: "active"
+  })), /*#__PURE__*/React__default.createElement("button", {
+    className: "verbum-item",
+    onClick: () => formatHeading('h2'),
+    type: "button"
+  }, /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-icon verbum-h2"
+  }), /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-text"
+  }, t('toolbar:blockFormatDropdown.h2')), blockType === 'h2' && /*#__PURE__*/React__default.createElement("span", {
+    className: "active"
+  })), /*#__PURE__*/React__default.createElement("button", {
+    className: "verbum-item",
+    onClick: () => formatHeading('h3'),
+    type: "button"
+  }, /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-icon verbum-h3"
+  }), /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-text"
+  }, t('toolbar:blockFormatDropdown.h3')), blockType === 'h3' && /*#__PURE__*/React__default.createElement("span", {
+    className: "active"
+  })), /*#__PURE__*/React__default.createElement("button", {
+    className: "verbum-item",
+    onClick: formatBulletList,
+    type: "button"
+  }, /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-icon verbum-bullet-list"
+  }), /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-text"
+  }, t('toolbar:blockFormatDropdown.bullet')), blockType === 'bullet' && /*#__PURE__*/React__default.createElement("span", {
+    className: "active"
+  })), /*#__PURE__*/React__default.createElement("button", {
+    className: "verbum-item",
+    onClick: formatNumberedList,
+    type: "button"
+  }, /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-icon verbum-numbered-list"
+  }), /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-text"
+  }, t('toolbar:blockFormatDropdown.number')), blockType === 'number' && /*#__PURE__*/React__default.createElement("span", {
+    className: "active"
+  })), /*#__PURE__*/React__default.createElement("button", {
+    className: "verbum-item",
+    onClick: formatCheckList,
+    type: "button"
+  }, /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-icon verbum-check-list"
+  }), /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-text"
+  }, t('toolbar:blockFormatDropdown.check')), blockType === 'check' && /*#__PURE__*/React__default.createElement("span", {
+    className: "active"
+  })), /*#__PURE__*/React__default.createElement("button", {
+    className: "verbum-item",
+    onClick: formatQuote,
+    type: "button"
+  }, /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-icon verbum-quote"
+  }), /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-text"
+  }, t('toolbar:blockFormatDropdown.quote')), blockType === 'quote' && /*#__PURE__*/React__default.createElement("span", {
+    className: "active"
+  })), /*#__PURE__*/React__default.createElement("button", {
+    className: "verbum-item",
+    onClick: formatCode,
+    type: "button"
+  }, /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-icon verbum-code"
+  }), /*#__PURE__*/React__default.createElement("span", {
+    className: "verbum-text"
+  }, t('toolbar:blockFormatDropdown.code')), blockType === 'code' && /*#__PURE__*/React__default.createElement("span", {
+    className: "active"
+  })));
+};
+
+function Divider$1() {
+  return /*#__PURE__*/React__default.createElement("div", {
+    className: "divider"
+  });
+}
+
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+var supportedBlockTypes = /*#__PURE__*/new Set(['paragraph', 'quote', 'code', 'h1', 'h2', 'h3', 'bullet', 'number', 'check']);
+var CODE_LANGUAGE_MAP = {
+  javascript: 'js',
+  md: 'markdown',
+  plaintext: 'plain',
+  python: 'py',
+  text: 'plain'
+};
+
+var ToolbarPlugin = _ref => {
+  var {
+    children,
+    defaultFontSize = '15px',
+    defaultFontColor = '#000',
+    defaultBgColor = '#fff',
+    defaultFontFamily = 'Arial',
+    disableBlockTypeSelect
+  } = _ref;
+  var [alignExists, AlignComponent] = useChild(children, AlignDropdown);
+  var {
+    initialEditor,
+    activeEditor,
+    setActiveEditor
+  } = React.useContext(EditorContext);
+  var [blockType, setBlockType] = React.useState('paragraph');
+  var [selectedElementKey, setSelectedElementKey] = React.useState(null);
+  var [fontSize, setFontSize] = React.useState(defaultFontSize);
+  var [fontColor, setFontColor] = React.useState(defaultFontColor);
+  var [bgColor, setBgColor] = React.useState(defaultBgColor);
+  var [fontFamily, setFontFamily] = React.useState(defaultFontFamily);
+  var [isLink, setIsLink] = React.useState(false);
+  var [isBold, setIsBold] = React.useState(false);
+  var [isItalic, setIsItalic] = React.useState(false);
+  var [isUnderline, setIsUnderline] = React.useState(false);
+  var [isStrikethrough, setIsStrikethrough] = React.useState(false);
+  var [isSubscript, setIsSubscript] = React.useState(false);
+  var [isSuperscript, setIsSuperscript] = React.useState(false);
+  var [isCode, setIsCode] = React.useState(false);
+  var [canUndo, setCanUndo] = React.useState(false);
+  var [canRedo, setCanRedo] = React.useState(false);
+  var [isRTL, setIsRTL] = React.useState(false);
+  var [codeLanguage, setCodeLanguage] = React.useState('');
+  var updateToolbar = React.useCallback(() => {
+    var selection$1 = lexical.$getSelection();
+
+    if (lexical.$isRangeSelection(selection$1)) {
+      var anchorNode = selection$1.anchor.getNode();
+      var element = anchorNode.getKey() === 'root' ? anchorNode : anchorNode.getTopLevelElementOrThrow();
+      var elementKey = element.getKey();
+      var elementDOM = activeEditor.getElementByKey(elementKey); // Update text format
+
+      setIsBold(selection$1.hasFormat('bold'));
+      setIsItalic(selection$1.hasFormat('italic'));
+      setIsUnderline(selection$1.hasFormat('underline'));
+      setIsStrikethrough(selection$1.hasFormat('strikethrough'));
+      setIsSubscript(selection$1.hasFormat('subscript'));
+      setIsSuperscript(selection$1.hasFormat('superscript'));
+      setIsCode(selection$1.hasFormat('code'));
+      setIsRTL(selection.$isParentElementRTL(selection$1)); // Update links
+
+      var node = getSelectedNode$1(selection$1);
+      var parent = node.getParent();
+
+      if (link.$isLinkNode(parent) || link.$isLinkNode(node)) {
+        setIsLink(true);
+      } else {
+        setIsLink(false);
+      }
+
+      if (elementDOM !== null) {
+        setSelectedElementKey(elementKey);
+
+        if (list.$isListNode(element)) {
+          var parentList = utils.$getNearestNodeOfType(anchorNode, list.ListNode);
+          var type = parentList ? parentList.getListType() : element.getListType();
+          setBlockType(type);
+        } else {
+          var _type = richText.$isHeadingNode(element) ? element.getTag() : element.getType();
+
+          setBlockType(_type);
+
+          if (code.$isCodeNode(element)) {
+            var language = element.getLanguage();
+            setCodeLanguage(language ? CODE_LANGUAGE_MAP[language] || language : '');
+            return;
+          }
+        }
+      } // Hande buttons
+
+
+      setFontSize(selection.$getSelectionStyleValueForProperty(selection$1, 'font-size', defaultFontSize));
+      setFontColor(selection.$getSelectionStyleValueForProperty(selection$1, 'color', defaultFontColor));
+      setBgColor(selection.$getSelectionStyleValueForProperty(selection$1, 'background-color', defaultBgColor));
+      var font = selection.$getSelectionStyleValueForProperty(selection$1, 'font-family');
+      if (font) setFontFamily(font);
+    }
+  }, [activeEditor]);
+  React.useEffect(() => {
+    return initialEditor.registerCommand(lexical.SELECTION_CHANGE_COMMAND, (_payload, newEditor) => {
+      updateToolbar();
+      setActiveEditor(newEditor);
+      return false;
+    }, lexical.COMMAND_PRIORITY_CRITICAL);
+  }, [initialEditor, updateToolbar]);
+  React.useEffect(() => {
+    return utils.mergeRegister(activeEditor.registerUpdateListener(_ref2 => {
+      var {
+        editorState
+      } = _ref2;
+      editorState.read(() => {
+        updateToolbar();
+      });
+    }), activeEditor.registerCommand(lexical.CAN_UNDO_COMMAND, payload => {
+      setCanUndo(payload);
+      return false;
+    }, lexical.COMMAND_PRIORITY_CRITICAL), activeEditor.registerCommand(lexical.CAN_REDO_COMMAND, payload => {
+      setCanRedo(payload);
+      return false;
+    }, lexical.COMMAND_PRIORITY_CRITICAL));
+  }, [activeEditor, updateToolbar]);
+  var applyStyleText = React.useCallback(styles => {
+    Object.entries(styles).forEach(_ref3 => {
+      var [key, value] = _ref3;
+
+      switch (key) {
+        case "font-family":
+          setFontFamily(value);
+          break;
+
+        case "font-size":
+          setFontSize(value);
+          break;
+
+        case "background-color":
+          setBgColor(value);
+          break;
+
+        case "color":
+          setFontColor(value);
+          break;
+      }
+    });
+    activeEditor.update(() => {
+      var selection$1 = lexical.$getSelection();
+
+      if (lexical.$isRangeSelection(selection$1)) {
+        selection.$patchStyleText(selection$1, styles);
+      }
+    });
+  }, [activeEditor]);
+  var insertLink = React.useCallback(() => {
+    if (!isLink) {
+      initialEditor.dispatchCommand(link.TOGGLE_LINK_COMMAND, 'https://');
+    } else {
+      initialEditor.dispatchCommand(link.TOGGLE_LINK_COMMAND, null);
+    }
+  }, [initialEditor, isLink]);
+  return /*#__PURE__*/React.createElement(ToolbarContext.Provider, {
+    value: {
+      isRTL,
+      canUndo,
+      canRedo,
+      fontFamily,
+      fontSize,
+      fontColor,
+      bgColor,
+      isBold,
+      isItalic,
+      isUnderline,
+      isCode,
+      isLink,
+      applyStyleText,
+      insertLink,
+      isStrikethrough,
+      isSubscript,
+      isSuperscript,
+      selectedElementKey,
+      codeLanguage,
+      blockType
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "verbum-toolbar"
+  }, /*#__PURE__*/React.createElement(UndoButton, null), /*#__PURE__*/React.createElement(RedoButton, null), /*#__PURE__*/React.createElement(Divider$1, null), !disableBlockTypeSelect && supportedBlockTypes.has(blockType) && activeEditor === initialEditor && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(BlockFormatDropdown, null), /*#__PURE__*/React.createElement(Divider$1, null)), blockType === 'code' ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(CodeLanguageDropdown, null), /*#__PURE__*/React.createElement(Divider$1, null), alignExists && AlignComponent) : /*#__PURE__*/React.createElement(React.Fragment, null, children)));
+};
+
+var PUNCTUATION = '\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\-\\[\\]\\\\/!%\'"~=<>_:;';
+var NAME = '\\b[A-Z][^\\s' + PUNCTUATION + ']';
+var DocumentMentionsRegex = {
+  NAME,
+  PUNCTUATION
+};
+var CapitalizedNameMentionsRegex = /*#__PURE__*/new RegExp('(^|[^#])((?:' + DocumentMentionsRegex.NAME + '{' + 1 + ',})$)');
+var PUNC = DocumentMentionsRegex.PUNCTUATION;
+var TRIGGERS = /*#__PURE__*/['@'].join(''); // Chars we expect to see in a mention (non-space, non-punctuation).
+
+var VALID_CHARS = '[^' + TRIGGERS + PUNC + '\\s]'; // Non-standard series of chars. Each series must be preceded and followed by
+// a valid char.
+
+var VALID_JOINS = '(?:' + '\\.[ |$]|' + // E.g. "r. " in "Mr. Smith"
+' |' + // E.g. " " in "Josh Duck"
+'[' + PUNC + ']|' + // E.g. "-' in "Salier-Hellendag"
+')';
+var LENGTH_LIMIT = 75;
+var AtSignMentionsRegex = /*#__PURE__*/new RegExp('(^|\\s|\\()(' + '[' + TRIGGERS + ']' + '((?:' + VALID_CHARS + VALID_JOINS + '){0,' + LENGTH_LIMIT + '})' + ')$'); // 50 is the longest alias length limit.
+
+var ALIAS_LENGTH_LIMIT = 50; // Regex used to match alias.
+
+var AtSignMentionsRegexAliasRegex = /*#__PURE__*/new RegExp('(^|\\s|\\()(' + '[' + TRIGGERS + ']' + '((?:' + VALID_CHARS + '){0,' + ALIAS_LENGTH_LIMIT + '})' + ')$'); // At most, 5 suggestions are shown in the popup.
+
+var SUGGESTION_LIST_LENGTH_LIMIT = 5;
+var mentionsCache = /*#__PURE__*/new Map();
+
+function useMentionLookupService(mentionString, mentionData) {
+  var [results, setResults] = React.useState([]);
+  React.useEffect(() => {
+    var cachedResults = mentionsCache.get(mentionString);
+
+    if (mentionString == null) {
+      setResults([]);
+      return;
+    }
+
+    if (cachedResults === null) {
+      return;
+    } else if (cachedResults !== undefined) {
+      setResults(cachedResults);
+      return;
+    }
+
+    mentionsCache.set(mentionString, null);
+    mentionData(mentionString).then(results => {
+      mentionsCache.set(mentionString, results);
+      setResults(results);
+    });
+  }, [mentionString]);
+  return results;
+}
+
+function checkForCapitalizedNameMentions(text, minMatchLength) {
+  var match = CapitalizedNameMentionsRegex.exec(text);
+
+  if (match !== null) {
+    // The strategy ignores leading whitespace but we need to know it's
+    // length to add it to the leadOffset
+    var maybeLeadingWhitespace = match[1];
+    var matchingString = match[2];
+
+    if (matchingString != null && matchingString.length >= minMatchLength) {
+      return {
+        leadOffset: match.index + maybeLeadingWhitespace.length,
+        matchingString,
+        replaceableString: matchingString
+      };
+    }
+  }
+
+  return null;
+}
+
+function checkForAtSignMentions(text, minMatchLength) {
+  var match = AtSignMentionsRegex.exec(text);
+
+  if (match === null) {
+    match = AtSignMentionsRegexAliasRegex.exec(text);
+  }
+
+  if (match !== null) {
+    // The strategy ignores leading whitespace but we need to know it's
+    // length to add it to the leadOffset
+    var maybeLeadingWhitespace = match[1];
+    var matchingString = match[3];
+
+    if (matchingString.length >= minMatchLength) {
+      return {
+        leadOffset: match.index + maybeLeadingWhitespace.length,
+        matchingString,
+        replaceableString: match[2]
+      };
+    }
+  }
+
+  return null;
+}
+
+function getPossibleQueryMatch(text) {
+  var match = checkForAtSignMentions(text, 1);
+  return match === null ? checkForCapitalizedNameMentions(text, 3) : match;
+}
+
+class MentionTypeaheadOption extends LexicalTypeaheadMenuPlugin.TypeaheadOption {
+  constructor(name, picture, url) {
+    super(name);
+    this.name = name;
+    this.picture = picture;
+    this.url = url;
+  }
+
+}
+
+function MentionsTypeaheadMenuItem(_ref) {
+  var {
+    index,
+    isSelected,
+    onClick,
+    onMouseEnter,
+    option
+  } = _ref;
+  var className = 'item';
+
+  if (isSelected) {
+    className += ' selected';
+  }
+
+  return /*#__PURE__*/React.createElement("li", {
+    key: option.key,
+    tabIndex: -1,
+    className: className,
+    ref: option.setRefElement,
+    role: "option",
+    "aria-selected": isSelected,
+    id: 'typeahead-item-' + index,
+    onMouseEnter: onMouseEnter,
+    onClick: onClick
+  }, option.picture, /*#__PURE__*/React.createElement("span", {
+    className: "verbum-text"
+  }, option.name));
+}
+
+function MentionsPlugin(props) {
+  var {
+    searchData,
+    getTypeaheadValues
+  } = props;
+  var [editor] = LexicalComposerContext.useLexicalComposerContext();
+  var [queryString, setQueryString] = React.useState(null);
+  var results = useMentionLookupService(queryString, searchData);
+  var checkForSlashTriggerMatch = LexicalTypeaheadMenuPlugin.useBasicTypeaheadTriggerMatch('/', {
+    minLength: 0
+  });
+  var options = React.useMemo(() => results.map(result => new MentionTypeaheadOption(getTypeaheadValues(result).value, getTypeaheadValues(result).picture, getTypeaheadValues(result).url)).slice(0, SUGGESTION_LIST_LENGTH_LIMIT), [results]);
+  var onSelectOption = React.useCallback((selectedOption, nodeToReplace, closeMenu) => {
+    editor.update(() => {
+      if (nodeToReplace) {
+        var mentionNode = $createMentionNode("@" + selectedOption.name);
+        var linkNode = link.$createAutoLinkNode(selectedOption.url);
+        linkNode.append(mentionNode);
+        nodeToReplace.replace(linkNode);
+        linkNode.select();
+      }
+
+      closeMenu();
+    });
+  }, [editor]);
+  var checkForMentionMatch = React.useCallback(text => {
+    var mentionMatch = getPossibleQueryMatch(text);
+    var slashMatch = checkForSlashTriggerMatch(text, editor);
+    return !slashMatch && mentionMatch ? mentionMatch : null;
+  }, [checkForSlashTriggerMatch, editor]);
+  return /*#__PURE__*/React.createElement(LexicalTypeaheadMenuPlugin.LexicalTypeaheadMenuPlugin, {
+    onQueryChange: setQueryString,
+    onSelectOption: onSelectOption,
+    triggerFn: checkForMentionMatch,
+    options: options,
+    menuRenderFn: (anchorElementRef, _ref2) => {
+      var {
+        selectedIndex,
+        selectOptionAndCleanUp,
+        setHighlightedIndex
+      } = _ref2;
+      return anchorElementRef && results.length ? /*#__PURE__*/ReactDOM.createPortal( /*#__PURE__*/React.createElement("div", {
+        className: "verbum-typeahead-popover verbum-mentions-menu"
+      }, /*#__PURE__*/React.createElement("ul", null, options.map((option, i) => /*#__PURE__*/React.createElement(MentionsTypeaheadMenuItem, {
+        index: i,
+        isSelected: selectedIndex === i,
+        onClick: () => {
+          setHighlightedIndex(i);
+          selectOptionAndCleanUp(option);
+        },
+        onMouseEnter: () => {
+          setHighlightedIndex(i);
+        },
+        key: option.key,
+        option: option
+      })))), anchorElementRef.current) : null;
+    }
+  });
+}
+
+var _excluded = ["color", "children", "onChange"];
+var basicColors = ['#d0021b', '#f5a623', '#f8e71c', '#8b572a', '#7ed321', '#417505', '#bd10e0', '#9013fe', '#4a90e2', '#50e3c2', '#b8e986', '#000000', '#4a4a4a', '#9b9b9b', '#ffffff'];
+var WIDTH = 214;
+var HEIGHT = 150;
+function ColorPicker(_ref) {
+  var {
+    color,
+    children,
+    onChange
+  } = _ref,
+      rest = _objectWithoutPropertiesLoose(_ref, _excluded);
+
+  var [selfColor, setSelfColor] = React.useState(transformColor('hex', color));
+  var saturationPosition = React.useMemo(() => ({
+    x: selfColor.hsv.s / 100 * WIDTH,
+    y: (100 - selfColor.hsv.v) / 100 * HEIGHT
+  }), [selfColor.hsv.s, selfColor.hsv.v]);
+  var huePosition = React.useMemo(() => ({
+    x: selfColor.hsv.h / 360 * WIDTH
+  }), [selfColor.hsv]);
+
+  var onMoveSaturation = _ref2 => {
+    var {
+      x,
+      y
+    } = _ref2;
+
+    var newHsv = _extends({}, selfColor.hsv, {
+      s: x / WIDTH * 100,
+      v: 100 - y / HEIGHT * 100
+    });
+
+    var newColor = transformColor('hsv', newHsv);
+    setSelfColor(newColor);
+  };
+
+  var onMoveHue = _ref3 => {
+    var {
+      x
+    } = _ref3;
+
+    var newHsv = _extends({}, selfColor.hsv, {
+      h: x / WIDTH * 360
+    });
+
+    var newColor = transformColor('hsv', newHsv);
+    setSelfColor(newColor);
+  };
+
+  React.useEffect(() => {
+    onChange(selfColor.hex);
+  }, [selfColor, onChange]);
+  React.useEffect(() => {
+    if (color === undefined) return;
+    setSelfColor(transformColor('hex', color));
+  }, [color]);
+  return /*#__PURE__*/React.createElement(DropDown, Object.assign({}, rest, {
+    stopCloseOnClickSelf: true
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "verbum-color-picker-wrapper",
+    style: {
+      width: WIDTH
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "verbum-color-picker-basic-color"
+  }, basicColors.map(basicColor => /*#__PURE__*/React.createElement("button", {
+    className: basicColor === selfColor.hex ? ' active' : '',
+    key: basicColor,
+    style: {
+      backgroundColor: basicColor
+    },
+    onClick: () => setSelfColor(transformColor('hex', basicColor)),
+    type: "button"
+  }))), /*#__PURE__*/React.createElement(MoveWrapper, {
+    className: "verbum-color-picker-saturation",
+    style: {
+      backgroundColor: "hsl(" + selfColor.hsv.h + ", 100%, 50%)"
+    },
+    onChange: onMoveSaturation
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "verbum-color-picker-saturation_cursor",
+    style: {
+      backgroundColor: selfColor.hex,
+      left: saturationPosition.x,
+      top: saturationPosition.y
+    }
+  })), /*#__PURE__*/React.createElement(MoveWrapper, {
+    className: "verbum-color-picker-hue",
+    onChange: onMoveHue
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "verbum-color-picker-hue_cursor",
+    style: {
+      backgroundColor: "hsl(" + selfColor.hsv.h + ", 100%, 50%)",
+      left: huePosition.x
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "verbum-color-picker-info"
+  }, /*#__PURE__*/React.createElement("span", null, selfColor.hex), /*#__PURE__*/React.createElement("div", {
+    className: "verbum-color-picker-color",
+    style: {
+      backgroundColor: selfColor.hex
+    }
+  }))), children);
+}
+
+function MoveWrapper(_ref4) {
+  var {
+    className,
+    style,
+    onChange,
+    children
+  } = _ref4;
+  var divRef = React.useRef(null);
+
+  var move = e => {
+    if (divRef.current) {
+      var {
+        current: div
+      } = divRef;
+      var {
+        width,
+        height,
+        left,
+        top
+      } = div.getBoundingClientRect();
+      var x = clamp(e.clientX - left, width, 0);
+      var y = clamp(e.clientY - top, height, 0);
+      onChange({
+        x,
+        y
+      });
+    }
+  };
+
+  var onMouseDown = e => {
+    if (e.button !== 0) return;
+    move(e);
+
+    var onMouseMove = _e => {
+      move(_e);
+    };
+
+    var onMouseUp = _e => {
+      document.removeEventListener('mousemove', onMouseMove, false);
+      document.removeEventListener('mouseup', onMouseUp, false);
+      move(_e);
+    };
+
+    document.addEventListener('mousemove', onMouseMove, false);
+    document.addEventListener('mouseup', onMouseUp, false);
+  };
+
+  return /*#__PURE__*/React.createElement("div", {
+    ref: divRef,
+    className: className,
+    style: style,
+    onMouseDown: onMouseDown
+  }, children);
+}
+
+function clamp(value, max, min) {
+  return value > max ? max : value < min ? min : value;
+}
+
+function toHex(value) {
+  if (!value.startsWith('#')) {
+    var ctx = document.createElement('canvas').getContext('2d');
+
+    if (!ctx) {
+      throw new Error('2d context not supported or canvas already initialized');
+    }
+
+    ctx.fillStyle = value;
+    return ctx.fillStyle;
+  } else if (value.length === 4 || value.length === 5) {
+    value = value.split('').map((v, i) => i ? v + v : '#').join('');
+    return value;
+  } else if (value.length === 7 || value.length === 9) {
+    return value;
+  }
+
+  return '#000000';
+}
+
+function hex2rgb(hex) {
+  var rbgArr = hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, (m, r, g, b) => '#' + r + r + g + g + b + b).substring(1).match(/.{2}/g).map(x => parseInt(x, 16));
+  return {
+    b: rbgArr[2],
+    g: rbgArr[1],
+    r: rbgArr[0]
+  };
+}
+
+function rgb2hsv(_ref5) {
+  var {
+    r,
+    g,
+    b
+  } = _ref5;
+  r /= 255;
+  g /= 255;
+  b /= 255;
+  var max = Math.max(r, g, b);
+  var d = max - Math.min(r, g, b);
+  var h = d ? (max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? 2 + (b - r) / d : 4 + (r - g) / d) * 60 : 0;
+  var s = max ? d / max * 100 : 0;
+  var v = max * 100;
+  return {
+    h,
+    s,
+    v
+  };
+}
+
+function hsv2rgb(_ref6) {
+  var {
+    h,
+    s,
+    v
+  } = _ref6;
+  s /= 100;
+  v /= 100;
+  var i = ~~(h / 60);
+  var f = h / 60 - i;
+  var p = v * (1 - s);
+  var q = v * (1 - s * f);
+  var t = v * (1 - s * (1 - f));
+  var index = i % 6;
+  var r = Math.round([v, q, p, p, t, v][index] * 255);
+  var g = Math.round([t, v, v, q, p, p][index] * 255);
+  var b = Math.round([p, p, t, v, v, q][index] * 255);
+  return {
+    b,
+    g,
+    r
+  };
+}
+
+function rgb2hex(_ref7) {
+  var {
+    b,
+    g,
+    r
+  } = _ref7;
+  return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+
+function transformColor(format, color) {
+  var hex = toHex('#121212');
+  var rgb = hex2rgb(hex);
+  var hsv = rgb2hsv(rgb);
+
+  if (format === 'hex') {
+    var value = color;
+    hex = toHex(value);
+    rgb = hex2rgb(hex);
+    hsv = rgb2hsv(rgb);
+  } else if (format === 'rgb') {
+    var _value = color;
+    rgb = _value;
+    hex = rgb2hex(rgb);
+    hsv = rgb2hsv(rgb);
+  } else if (format === 'hsv') {
+    var _value2 = color;
+    hsv = _value2;
+    rgb = hsv2rgb(hsv);
+    hex = rgb2hex(rgb);
+  }
+
+  return {
+    hex,
+    hsv,
+    rgb
+  };
+}
+
+var BackgroundColorPicker = () => {
+  var {
+    bgColor,
+    applyStyleText
+  } = React.useContext(ToolbarContext);
+  var {
+    t
+  } = reactI18next.useTranslation('toolbar');
+  var onBgColorSelect = React.useCallback(value => {
+    applyStyleText({
+      'background-color': value
+    });
+  }, [applyStyleText]);
+  return /*#__PURE__*/React__default.createElement(ColorPicker, {
+    buttonClassName: "verbum-toolbar-item verbum-color-picker",
+    buttonAriaLabel: t('toolbar:backgroundColorPicker.Description'),
+    buttonIconClassName: "verbum-icon verbum-bg-color",
+    color: bgColor,
+    onChange: onBgColorSelect,
+    title: "bg color"
+  });
+};
+
+var BoldButton = () => {
+  var {
+    activeEditor
+  } = React.useContext(EditorContext);
+  var {
+    isBold
+  } = React.useContext(ToolbarContext);
+  var {
+    t
+  } = reactI18next.useTranslation('toolbar');
+  return /*#__PURE__*/React__default.createElement("button", {
+    onClick: () => {
+      activeEditor.dispatchCommand(lexical.FORMAT_TEXT_COMMAND, 'bold');
+    },
+    className: 'verbum-toolbar-item spaced ' + (isBold ? 'active' : ''),
+    title: IS_APPLE ? t('toolbar:boldButton.Title') + " (\u2318B)" : t('toolbar:boldButton.Title') + " (Ctrl + B)",
+    "aria-label": t('toolbar:boldButton.Description') + " " + (IS_APPLE ? '⌘B' : 'Ctrl+B'),
+    type: "button"
+  }, /*#__PURE__*/React__default.createElement("i", {
+    className: "verbum-format verbum-bold"
+  }));
+};
+
+var CodeFormatButton = () => {
+  var {
+    activeEditor
+  } = React.useContext(EditorContext);
+  var {
+    isCode
+  } = React.useContext(ToolbarContext);
+  var {
+    t
+  } = reactI18next.useTranslation('toolbar');
+  return /*#__PURE__*/React__default.createElement("button", {
+    onClick: () => {
+      activeEditor.dispatchCommand(lexical.FORMAT_TEXT_COMMAND, 'code');
+    },
+    className: 'verbum-toolbar-item spaced ' + (isCode ? 'active' : ''),
+    title: t('toolbar:codeFormatButton.Description'),
+    "aria-label": t('toolbar:codeFormatButton.Description'),
+    type: "button"
+  }, /*#__PURE__*/React__default.createElement("i", {
+    className: "verbum-format verbum-code"
+  }));
+};
+
+var PREVIEW_CACHE = {};
+var URL_MATCHER$1 = /((https?:\/\/(www\.)?)|(www\.))[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
+
+function useSuspenseRequest(url) {
+  var cached = PREVIEW_CACHE[url];
+
+  if (!url.match(URL_MATCHER$1)) {
+    return {
+      preview: null
+    };
+  }
+
+  if (!cached) {
+    cached = PREVIEW_CACHE[url] = fetch("/api/link-preview?url=" + encodeURI(url)).then(response => response.json()).then(preview => {
+      PREVIEW_CACHE[url] = preview;
+      return preview;
+    }).catch(() => {
+      PREVIEW_CACHE[url] = {
+        preview: null
+      };
+    });
+  }
+
+  if (cached instanceof Promise) {
+    throw cached;
+  }
+
+  return cached;
+}
+
+function LinkPreviewContent(_ref) {
+  var {
+    url
+  } = _ref;
+  var {
+    preview
+  } = useSuspenseRequest(url);
+
+  if (preview === null) {
+    return null;
+  }
+
+  return /*#__PURE__*/React.createElement("div", {
+    className: "LinkPreview__container"
+  }, preview.img && /*#__PURE__*/React.createElement("div", {
+    className: "LinkPreview__imageWrapper"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: preview.img,
+    alt: preview.title,
+    className: "LinkPreview__image"
+  })), preview.domain && /*#__PURE__*/React.createElement("div", {
+    className: "LinkPreview__domain"
+  }, preview.domain), preview.title && /*#__PURE__*/React.createElement("div", {
+    className: "LinkPreview__title"
+  }, preview.title), preview.description && /*#__PURE__*/React.createElement("div", {
+    className: "LinkPreview__description"
+  }, preview.description));
+}
+
+function Glimmer(props) {
+  return /*#__PURE__*/React.createElement("div", Object.assign({
+    className: "LinkPreview__glimmer"
+  }, props, {
+    style: _extends({
+      animationDelay: (props.index || 0) * 300
+    }, props.style || {})
+  }));
+}
+
+function LinkPreview(_ref2) {
+  var {
+    url
+  } = _ref2;
+  return /*#__PURE__*/React.createElement(React.Suspense, {
+    fallback: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Glimmer, {
+      style: {
+        height: '80px'
+      },
+      index: 0
+    }), /*#__PURE__*/React.createElement(Glimmer, {
+      style: {
+        width: '60%'
+      },
+      index: 1
+    }), /*#__PURE__*/React.createElement(Glimmer, {
+      style: {
+        width: '80%'
+      },
+      index: 2
+    }))
+  }, /*#__PURE__*/React.createElement(LinkPreviewContent, {
+    url: url
+  }));
+}
+
+function positionEditorElement(editor, rect) {
+  if (rect === null) {
+    editor.style.opacity = '0';
+    editor.style.top = '-1000px';
+    editor.style.left = '-1000px';
+  } else {
+    editor.style.opacity = '1';
+    editor.style.top = rect.top + rect.height + window.pageYOffset + 10 + "px";
+    editor.style.left = rect.left + window.pageXOffset - editor.offsetWidth / 2 + rect.width / 2 + "px";
+  }
+}
+
+function FloatingLinkEditor(_ref) {
+  var {
+    editor
+  } = _ref;
+  var editorRef = React.useRef(null);
+  var inputRef = React.useRef(null);
+  var [linkUrl, setLinkUrl] = React.useState('');
+  var [isEditMode, setEditMode] = React.useState(false);
+  var [lastSelection, setLastSelection] = React.useState(null);
+  var updateLinkEditor = React.useCallback(() => {
+    var selection = lexical.$getSelection();
+
+    if (lexical.$isRangeSelection(selection)) {
+      var node = getSelectedNode$1(selection);
+      var parent = node.getParent();
+
+      if (link.$isLinkNode(parent)) {
+        setLinkUrl(parent.getURL());
+      } else if (link.$isLinkNode(node)) {
+        setLinkUrl(node.getURL());
+      } else {
+        setLinkUrl('');
+      }
+    }
+
+    var editorElem = editorRef.current;
+    var nativeSelection = window.getSelection();
+    var activeElement = document.activeElement;
+
+    if (editorElem === null) {
+      return;
+    }
+
+    var rootElement = editor.getRootElement();
+
+    if (selection !== null && !nativeSelection.isCollapsed && rootElement !== null && rootElement.contains(nativeSelection.anchorNode)) {
+      var domRange = nativeSelection.getRangeAt(0);
+      var rect;
+
+      if (nativeSelection.anchorNode === rootElement) {
+        var inner = rootElement;
+
+        while (inner.firstElementChild != null) {
+          inner = inner.firstElementChild;
+        }
+
+        rect = inner.getBoundingClientRect();
+      } else {
+        rect = domRange.getBoundingClientRect();
+      }
+
+      positionEditorElement(editorElem, rect);
+      setLastSelection(selection);
+    } else if (!activeElement || activeElement.className !== 'link-input') {
+      positionEditorElement(editorElem, null);
+      setLastSelection(null);
+      setEditMode(false);
+      setLinkUrl('');
+    }
+
+    return true;
+  }, [editor]);
+  React.useEffect(() => {
+    var onResize = () => {
+      editor.getEditorState().read(() => {
+        updateLinkEditor();
+      });
+    };
+
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+    };
+  }, [editor, updateLinkEditor]);
+  React.useEffect(() => {
+    return utils.mergeRegister(editor.registerUpdateListener(_ref2 => {
+      var {
+        editorState
+      } = _ref2;
+      editorState.read(() => {
+        updateLinkEditor();
+      });
+    }), editor.registerCommand(lexical.SELECTION_CHANGE_COMMAND, () => {
+      updateLinkEditor();
+      return true;
+    }, lexical.COMMAND_PRIORITY_LOW));
+  }, [editor, updateLinkEditor]);
+  React.useEffect(() => {
+    editor.getEditorState().read(() => {
+      updateLinkEditor();
+    });
+  }, [editor, updateLinkEditor]);
+  React.useEffect(() => {
+    if (isEditMode && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditMode]);
+  return /*#__PURE__*/React__default.createElement("div", {
+    ref: editorRef,
+    className: "verbum-link-editor"
+  }, isEditMode ? /*#__PURE__*/React__default.createElement("input", {
+    ref: inputRef,
+    className: "link-input",
+    value: linkUrl,
+    onChange: event => {
+      setLinkUrl(event.target.value);
+    },
+    onKeyDown: event => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+
+        if (lastSelection !== null) {
+          if (linkUrl !== '') {
+            editor.dispatchCommand(link.TOGGLE_LINK_COMMAND, linkUrl);
+          }
+
+          setEditMode(false);
+        }
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        setEditMode(false);
+      }
+    }
+  }) : /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement("div", {
+    className: "link-input"
+  }, /*#__PURE__*/React__default.createElement("a", {
+    href: linkUrl,
+    target: "_blank",
+    rel: "noopener noreferrer"
+  }, linkUrl), /*#__PURE__*/React__default.createElement("div", {
+    className: "link-edit",
+    role: "button",
+    tabIndex: 0,
+    onMouseDown: event => event.preventDefault(),
+    onClick: () => {
+      setEditMode(true);
+    }
+  })), /*#__PURE__*/React__default.createElement(LinkPreview, {
+    url: linkUrl
+  })));
+}
+
+var defaultFontFamilyOptions = [['Arial', 'Arial'], ['Courier New', 'Courier New'], ['Georgia', 'Georgia'], ['Times New Roman', 'Times New Roman'], ['Trebuchet MS', 'Trebuchet MS'], ['Verdana', 'Verdana']];
+
+var FontFamilyDropdown = _ref => {
+  var {
+    fontOptions = defaultFontFamilyOptions
+  } = _ref;
+  var {
+    fontFamily,
+    applyStyleText
+  } = React.useContext(ToolbarContext);
+  var onFontFamilySelect = React.useCallback(e => {
+    applyStyleText({
+      'font-family': e.target.value
+    });
+  }, [applyStyleText]);
+  return /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement(Select, {
+    className: "verbum-toolbar-item verbum-font-family",
+    onChange: onFontFamilySelect,
+    options: fontOptions,
+    value: fontFamily
+  }), /*#__PURE__*/React__default.createElement("i", {
+    className: "verbum-chevron-down inside"
+  }));
+};
+
+var defaultFontSizeOptions = [['10px', '10px'], ['11px', '11px'], ['12px', '12px'], ['13px', '13px'], ['14px', '14px'], ['15px', '15px'], ['16px', '16px'], ['17px', '17px'], ['18px', '18px'], ['19px', '19px'], ['20px', '20px']];
+
+var FontSizeDropdown = _ref => {
+  var {
+    fontSizeOptions = defaultFontSizeOptions
+  } = _ref;
+  var {
+    fontSize,
+    applyStyleText
+  } = React.useContext(ToolbarContext);
+  var onFontSizeSelect = React.useCallback(e => {
+    applyStyleText({
+      'font-size': e.target.value
+    });
+  }, [applyStyleText]);
+  return /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement(Select, {
+    className: "verbum-toolbar-item verbum-font-size",
+    onChange: onFontSizeSelect,
+    options: fontSizeOptions,
+    value: fontSize
+  }), /*#__PURE__*/React__default.createElement("i", {
+    className: "verbum-chevron-down inside"
+  }));
+};
+
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
  */
 var INSERT_POLL_COMMAND = /*#__PURE__*/lexical.createCommand();
 function PollPlugin() {
@@ -5247,1353 +6594,6 @@ var InsertDropdown = _ref7 => {
   }), /*#__PURE__*/React__default.createElement("span", {
     className: "verbum-text"
   }, "Sticky Note"))), modal);
-};
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @flow strict
- */
-var IS_APPLE = CAN_USE_DOM && /*#__PURE__*/ /Mac|iPod|iPhone|iPad/.test(navigator.platform);
-// export const IS_WINDOWS: boolean = CAN_USE_DOM && /Win/.test(navigator.platform);
-// export const IS_CHROME: boolean = CAN_USE_DOM && /^(?=.*Chrome).*/i.test(navigator.userAgent);
-// export const canUseTextInputEvent: boolean = CAN_USE_DOM && 'TextEvent' in window && !documentMode;
-
-var UndoButton = () => {
-  var {
-    canUndo
-  } = React.useContext(ToolbarContext);
-  var {
-    activeEditor
-  } = React.useContext(EditorContext);
-  var {
-    t
-  } = reactI18next.useTranslation('toolbar');
-  return /*#__PURE__*/React.createElement("button", {
-    disabled: !canUndo,
-    onClick: () => {
-      activeEditor.dispatchCommand(lexical.UNDO_COMMAND, undefined);
-    },
-    title: IS_APPLE ? t('toolbar:undoButton.Title') + " (\u2318Z)" : t('toolbar:undoButton.Title') + " (Ctrl+Z)",
-    className: "verbum-toolbar-item spaced",
-    "aria-label": t('toolbar:undoButton.Description'),
-    type: "button"
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "verbum-format verbum-undo"
-  }));
-};
-
-var RedoButton = () => {
-  var {
-    canRedo
-  } = React.useContext(ToolbarContext);
-  var {
-    activeEditor
-  } = React.useContext(EditorContext);
-  var {
-    t
-  } = reactI18next.useTranslation('toolbar');
-  return /*#__PURE__*/React.createElement("button", {
-    disabled: !canRedo,
-    onClick: () => {
-      activeEditor.dispatchCommand(lexical.REDO_COMMAND, undefined);
-    },
-    title: IS_APPLE ? t('toolbar:redoButton.Title') + " (\u2318Y)" : t('toolbar:redoButton.Title') + " (Ctrl+Y)",
-    className: "verbum-toolbar-item",
-    "aria-label": t('toolbar:redoButton.Description'),
-    type: "button"
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "verbum-format verbum-redo"
-  }));
-};
-
-var Select = _ref => {
-  var {
-    onChange,
-    className,
-    options,
-    value
-  } = _ref;
-  return /*#__PURE__*/React__default.createElement("select", {
-    className: className,
-    onChange: onChange,
-    value: value
-  }, options.map(_ref2 => {
-    var [option, text] = _ref2;
-    return /*#__PURE__*/React__default.createElement("option", {
-      key: option,
-      value: option
-    }, text);
-  }));
-};
-
-var CODE_LANGUAGE_OPTIONS = [['', '- Select language -'], ['c', 'C'], ['clike', 'C-like'], ['css', 'CSS'], ['html', 'HTML'], ['js', 'JavaScript'], ['markdown', 'Markdown'], ['objc', 'Objective-C'], ['plain', 'Plain Text'], ['py', 'Python'], ['rust', 'Rust'], ['sql', 'SQL'], ['swift', 'Swift'], ['xml', 'XML']];
-
-var CodeLanguageDropdown = () => {
-  var {
-    activeEditor
-  } = React.useContext(EditorContext);
-  var {
-    selectedElementKey,
-    codeLanguage
-  } = React.useContext(ToolbarContext);
-  var onCodeLanguageSelect = React.useCallback(e => {
-    activeEditor.update(() => {
-      if (selectedElementKey !== null) {
-        var node = lexical.$getNodeByKey(selectedElementKey);
-
-        if (code.$isCodeNode(node)) {
-          console.log(e.target.value);
-          node.setLanguage(e.target.value);
-        }
-      }
-    });
-  }, [activeEditor, selectedElementKey]);
-  return /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement(Select, {
-    className: "verbum-toolbar-item code-language",
-    onChange: onCodeLanguageSelect,
-    options: CODE_LANGUAGE_OPTIONS,
-    value: codeLanguage
-  }), /*#__PURE__*/React__default.createElement("i", {
-    className: "verbum-chevron-down inside"
-  }));
-};
-
-var BlockFormatDropdown = () => {
-  var {
-    initialEditor
-  } = React.useContext(EditorContext);
-  var {
-    blockType
-  } = React.useContext(ToolbarContext);
-  var {
-    t
-  } = reactI18next.useTranslation('toolbar');
-
-  var formatParagraph = () => {
-    if (blockType !== 'paragraph') {
-      initialEditor.update(() => {
-        var selection$1 = lexical.$getSelection();
-
-        if (lexical.$isRangeSelection(selection$1)) {
-          selection.$wrapNodes(selection$1, () => lexical.$createParagraphNode());
-        }
-      });
-    }
-  };
-
-  var formatHeading = headingSize => {
-    if (blockType !== headingSize) {
-      initialEditor.update(() => {
-        var selection$1 = lexical.$getSelection();
-
-        if (lexical.$isRangeSelection(selection$1)) {
-          selection.$wrapNodes(selection$1, () => richText.$createHeadingNode(headingSize));
-        }
-      });
-    }
-  };
-
-  var formatBulletList = () => {
-    if (blockType !== 'bullet') {
-      initialEditor.dispatchCommand(list.INSERT_UNORDERED_LIST_COMMAND, undefined);
-    } else {
-      initialEditor.dispatchCommand(list.REMOVE_LIST_COMMAND, undefined);
-    }
-  };
-
-  var formatCheckList = () => {
-    if (blockType !== 'check') {
-      initialEditor.dispatchCommand(list.INSERT_CHECK_LIST_COMMAND, undefined);
-    } else {
-      initialEditor.dispatchCommand(list.REMOVE_LIST_COMMAND, undefined);
-    }
-  };
-
-  var formatNumberedList = () => {
-    if (blockType !== 'number') {
-      initialEditor.dispatchCommand(list.INSERT_ORDERED_LIST_COMMAND, undefined);
-    } else {
-      initialEditor.dispatchCommand(list.REMOVE_LIST_COMMAND, undefined);
-    }
-  };
-
-  var formatQuote = () => {
-    if (blockType !== 'quote') {
-      initialEditor.update(() => {
-        var selection$1 = lexical.$getSelection();
-
-        if (lexical.$isRangeSelection(selection$1)) {
-          selection.$wrapNodes(selection$1, () => richText.$createQuoteNode());
-        }
-      });
-    }
-  };
-
-  var formatCode = () => {
-    if (blockType !== 'code') {
-      initialEditor.update(() => {
-        var selection$1 = lexical.$getSelection();
-
-        if (lexical.$isRangeSelection(selection$1)) {
-          if (selection$1.isCollapsed()) {
-            selection.$wrapNodes(selection$1, () => code.$createCodeNode());
-          } else {
-            var textContent = selection$1.getTextContent();
-            var codeNode = code.$createCodeNode();
-            selection$1.removeText();
-            selection$1.insertNodes([codeNode]);
-            selection$1.insertRawText(textContent);
-          }
-        }
-      });
-    }
-  };
-
-  return /*#__PURE__*/React__default.createElement(DropDown, {
-    buttonLabel: t("blockFormatDropdown." + blockType),
-    buttonAriaLabel: t('toolbar:blockFormatDropdown.Description'),
-    buttonClassName: "verbum-toolbar-item verbum-block-controls",
-    buttonIconClassName: 'icon block-type ' + blockType
-  }, /*#__PURE__*/React__default.createElement("button", {
-    className: "verbum-item",
-    onClick: formatParagraph,
-    type: "button"
-  }, /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-icon verbum-paragraph"
-  }), /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-text"
-  }, t('toolbar:blockFormatDropdown.paragraph')), blockType === 'paragraph' && /*#__PURE__*/React__default.createElement("span", {
-    className: "active"
-  })), /*#__PURE__*/React__default.createElement("button", {
-    className: "verbum-item",
-    onClick: () => formatHeading('h1'),
-    type: "button"
-  }, /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-icon verbum-h1"
-  }), /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-text"
-  }, t('toolbar:blockFormatDropdown.h1')), blockType === 'h1' && /*#__PURE__*/React__default.createElement("span", {
-    className: "active"
-  })), /*#__PURE__*/React__default.createElement("button", {
-    className: "verbum-item",
-    onClick: () => formatHeading('h2'),
-    type: "button"
-  }, /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-icon verbum-h2"
-  }), /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-text"
-  }, t('toolbar:blockFormatDropdown.h2')), blockType === 'h2' && /*#__PURE__*/React__default.createElement("span", {
-    className: "active"
-  })), /*#__PURE__*/React__default.createElement("button", {
-    className: "verbum-item",
-    onClick: () => formatHeading('h3'),
-    type: "button"
-  }, /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-icon verbum-h3"
-  }), /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-text"
-  }, t('toolbar:blockFormatDropdown.h3')), blockType === 'h3' && /*#__PURE__*/React__default.createElement("span", {
-    className: "active"
-  })), /*#__PURE__*/React__default.createElement("button", {
-    className: "verbum-item",
-    onClick: formatBulletList,
-    type: "button"
-  }, /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-icon verbum-bullet-list"
-  }), /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-text"
-  }, t('toolbar:blockFormatDropdown.bullet')), blockType === 'bullet' && /*#__PURE__*/React__default.createElement("span", {
-    className: "active"
-  })), /*#__PURE__*/React__default.createElement("button", {
-    className: "verbum-item",
-    onClick: formatNumberedList,
-    type: "button"
-  }, /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-icon verbum-numbered-list"
-  }), /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-text"
-  }, t('toolbar:blockFormatDropdown.number')), blockType === 'number' && /*#__PURE__*/React__default.createElement("span", {
-    className: "active"
-  })), /*#__PURE__*/React__default.createElement("button", {
-    className: "verbum-item",
-    onClick: formatCheckList,
-    type: "button"
-  }, /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-icon verbum-check-list"
-  }), /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-text"
-  }, t('toolbar:blockFormatDropdown.check')), blockType === 'check' && /*#__PURE__*/React__default.createElement("span", {
-    className: "active"
-  })), /*#__PURE__*/React__default.createElement("button", {
-    className: "verbum-item",
-    onClick: formatQuote,
-    type: "button"
-  }, /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-icon verbum-quote"
-  }), /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-text"
-  }, t('toolbar:blockFormatDropdown.quote')), blockType === 'quote' && /*#__PURE__*/React__default.createElement("span", {
-    className: "active"
-  })), /*#__PURE__*/React__default.createElement("button", {
-    className: "verbum-item",
-    onClick: formatCode,
-    type: "button"
-  }, /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-icon verbum-code"
-  }), /*#__PURE__*/React__default.createElement("span", {
-    className: "verbum-text"
-  }, t('toolbar:blockFormatDropdown.code')), blockType === 'code' && /*#__PURE__*/React__default.createElement("span", {
-    className: "active"
-  })));
-};
-
-function Divider$1() {
-  return /*#__PURE__*/React__default.createElement("div", {
-    className: "divider"
-  });
-}
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-var supportedBlockTypes = /*#__PURE__*/new Set(['paragraph', 'quote', 'code', 'h1', 'h2', 'h3', 'bullet', 'number', 'check']);
-var CODE_LANGUAGE_MAP = {
-  javascript: 'js',
-  md: 'markdown',
-  plaintext: 'plain',
-  python: 'py',
-  text: 'plain'
-};
-
-var ToolbarPlugin = _ref => {
-  var {
-    children,
-    defaultFontSize = '15px',
-    defaultFontColor = '#000',
-    defaultBgColor = '#fff',
-    defaultFontFamily = 'Arial'
-  } = _ref;
-  var [insertExists, InsertComponent] = useChild(children, InsertDropdown);
-  var [alignExists, AlignComponent] = useChild(children, AlignDropdown);
-  var {
-    initialEditor,
-    activeEditor,
-    setActiveEditor
-  } = React.useContext(EditorContext);
-  var [blockType, setBlockType] = React.useState('paragraph');
-  var [selectedElementKey, setSelectedElementKey] = React.useState(null);
-  var [fontSize, setFontSize] = React.useState(defaultFontSize);
-  var [fontColor, setFontColor] = React.useState(defaultFontColor);
-  var [bgColor, setBgColor] = React.useState(defaultBgColor);
-  var [fontFamily, setFontFamily] = React.useState(defaultFontFamily);
-  var [isLink, setIsLink] = React.useState(false);
-  var [isBold, setIsBold] = React.useState(false);
-  var [isItalic, setIsItalic] = React.useState(false);
-  var [isUnderline, setIsUnderline] = React.useState(false);
-  var [isStrikethrough, setIsStrikethrough] = React.useState(false);
-  var [isSubscript, setIsSubscript] = React.useState(false);
-  var [isSuperscript, setIsSuperscript] = React.useState(false);
-  var [isCode, setIsCode] = React.useState(false);
-  var [canUndo, setCanUndo] = React.useState(false);
-  var [canRedo, setCanRedo] = React.useState(false);
-  var [isRTL, setIsRTL] = React.useState(false);
-  var [codeLanguage, setCodeLanguage] = React.useState('');
-  var updateToolbar = React.useCallback(() => {
-    var selection$1 = lexical.$getSelection();
-
-    if (lexical.$isRangeSelection(selection$1)) {
-      var anchorNode = selection$1.anchor.getNode();
-      var element = anchorNode.getKey() === 'root' ? anchorNode : anchorNode.getTopLevelElementOrThrow();
-      var elementKey = element.getKey();
-      var elementDOM = activeEditor.getElementByKey(elementKey); // Update text format
-
-      setIsBold(selection$1.hasFormat('bold'));
-      setIsItalic(selection$1.hasFormat('italic'));
-      setIsUnderline(selection$1.hasFormat('underline'));
-      setIsStrikethrough(selection$1.hasFormat('strikethrough'));
-      setIsSubscript(selection$1.hasFormat('subscript'));
-      setIsSuperscript(selection$1.hasFormat('superscript'));
-      setIsCode(selection$1.hasFormat('code'));
-      setIsRTL(selection.$isParentElementRTL(selection$1)); // Update links
-
-      var node = getSelectedNode$1(selection$1);
-      var parent = node.getParent();
-
-      if (link.$isLinkNode(parent) || link.$isLinkNode(node)) {
-        setIsLink(true);
-      } else {
-        setIsLink(false);
-      }
-
-      if (elementDOM !== null) {
-        setSelectedElementKey(elementKey);
-
-        if (list.$isListNode(element)) {
-          var parentList = utils.$getNearestNodeOfType(anchorNode, list.ListNode);
-          var type = parentList ? parentList.getListType() : element.getListType();
-          setBlockType(type);
-        } else {
-          var _type = richText.$isHeadingNode(element) ? element.getTag() : element.getType();
-
-          setBlockType(_type);
-
-          if (code.$isCodeNode(element)) {
-            var language = element.getLanguage();
-            setCodeLanguage(language ? CODE_LANGUAGE_MAP[language] || language : '');
-            return;
-          }
-        }
-      } // Hande buttons
-
-
-      setFontSize(selection.$getSelectionStyleValueForProperty(selection$1, 'font-size', defaultFontSize));
-      setFontColor(selection.$getSelectionStyleValueForProperty(selection$1, 'color', defaultFontColor));
-      setBgColor(selection.$getSelectionStyleValueForProperty(selection$1, 'background-color', defaultBgColor));
-      var font = selection.$getSelectionStyleValueForProperty(selection$1, 'font-family');
-      if (font) setFontFamily(font);
-    }
-  }, [activeEditor]);
-  React.useEffect(() => {
-    return initialEditor.registerCommand(lexical.SELECTION_CHANGE_COMMAND, (_payload, newEditor) => {
-      updateToolbar();
-      setActiveEditor(newEditor);
-      return false;
-    }, lexical.COMMAND_PRIORITY_CRITICAL);
-  }, [initialEditor, updateToolbar]);
-  React.useEffect(() => {
-    return utils.mergeRegister(activeEditor.registerUpdateListener(_ref2 => {
-      var {
-        editorState
-      } = _ref2;
-      editorState.read(() => {
-        updateToolbar();
-      });
-    }), activeEditor.registerCommand(lexical.CAN_UNDO_COMMAND, payload => {
-      setCanUndo(payload);
-      return false;
-    }, lexical.COMMAND_PRIORITY_CRITICAL), activeEditor.registerCommand(lexical.CAN_REDO_COMMAND, payload => {
-      setCanRedo(payload);
-      return false;
-    }, lexical.COMMAND_PRIORITY_CRITICAL));
-  }, [activeEditor, updateToolbar]);
-  var applyStyleText = React.useCallback(styles => {
-    Object.entries(styles).forEach(_ref3 => {
-      var [key, value] = _ref3;
-
-      switch (key) {
-        case "font-family":
-          setFontFamily(value);
-          break;
-
-        case "font-size":
-          setFontSize(value);
-          break;
-
-        case "background-color":
-          setBgColor(value);
-          break;
-
-        case "color":
-          setFontColor(value);
-          break;
-      }
-    });
-    activeEditor.update(() => {
-      var selection$1 = lexical.$getSelection();
-
-      if (lexical.$isRangeSelection(selection$1)) {
-        selection.$patchStyleText(selection$1, styles);
-      }
-    });
-  }, [activeEditor]);
-  var insertLink = React.useCallback(() => {
-    if (!isLink) {
-      initialEditor.dispatchCommand(link.TOGGLE_LINK_COMMAND, 'https://');
-    } else {
-      initialEditor.dispatchCommand(link.TOGGLE_LINK_COMMAND, null);
-    }
-  }, [initialEditor, isLink]);
-  return /*#__PURE__*/React.createElement(ToolbarContext.Provider, {
-    value: {
-      isRTL,
-      canUndo,
-      canRedo,
-      fontFamily,
-      fontSize,
-      fontColor,
-      bgColor,
-      isBold,
-      isItalic,
-      isUnderline,
-      isCode,
-      isLink,
-      applyStyleText,
-      insertLink,
-      isStrikethrough,
-      isSubscript,
-      isSuperscript,
-      selectedElementKey,
-      codeLanguage,
-      blockType
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "verbum-toolbar"
-  }, /*#__PURE__*/React.createElement(UndoButton, null), /*#__PURE__*/React.createElement(RedoButton, null), /*#__PURE__*/React.createElement(Divider$1, null), supportedBlockTypes.has(blockType) && activeEditor === initialEditor && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(BlockFormatDropdown, null), /*#__PURE__*/React.createElement(Divider$1, null)), blockType === 'code' ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(CodeLanguageDropdown, null), /*#__PURE__*/React.createElement(Divider$1, null), alignExists && AlignComponent) : /*#__PURE__*/React.createElement(React.Fragment, null, children)));
-};
-
-var PUNCTUATION = '\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\-\\[\\]\\\\/!%\'"~=<>_:;';
-var NAME = '\\b[A-Z][^\\s' + PUNCTUATION + ']';
-var DocumentMentionsRegex = {
-  NAME,
-  PUNCTUATION
-};
-var CapitalizedNameMentionsRegex = /*#__PURE__*/new RegExp('(^|[^#])((?:' + DocumentMentionsRegex.NAME + '{' + 1 + ',})$)');
-var PUNC = DocumentMentionsRegex.PUNCTUATION;
-var TRIGGERS = /*#__PURE__*/['@'].join(''); // Chars we expect to see in a mention (non-space, non-punctuation).
-
-var VALID_CHARS = '[^' + TRIGGERS + PUNC + '\\s]'; // Non-standard series of chars. Each series must be preceded and followed by
-// a valid char.
-
-var VALID_JOINS = '(?:' + '\\.[ |$]|' + // E.g. "r. " in "Mr. Smith"
-' |' + // E.g. " " in "Josh Duck"
-'[' + PUNC + ']|' + // E.g. "-' in "Salier-Hellendag"
-')';
-var LENGTH_LIMIT = 75;
-var AtSignMentionsRegex = /*#__PURE__*/new RegExp('(^|\\s|\\()(' + '[' + TRIGGERS + ']' + '((?:' + VALID_CHARS + VALID_JOINS + '){0,' + LENGTH_LIMIT + '})' + ')$'); // 50 is the longest alias length limit.
-
-var ALIAS_LENGTH_LIMIT = 50; // Regex used to match alias.
-
-var AtSignMentionsRegexAliasRegex = /*#__PURE__*/new RegExp('(^|\\s|\\()(' + '[' + TRIGGERS + ']' + '((?:' + VALID_CHARS + '){0,' + ALIAS_LENGTH_LIMIT + '})' + ')$'); // At most, 5 suggestions are shown in the popup.
-
-var SUGGESTION_LIST_LENGTH_LIMIT = 5;
-var mentionsCache = /*#__PURE__*/new Map();
-
-function useMentionLookupService(mentionString, mentionData) {
-  var [results, setResults] = React.useState([]);
-  React.useEffect(() => {
-    var cachedResults = mentionsCache.get(mentionString);
-
-    if (mentionString == null) {
-      setResults([]);
-      return;
-    }
-
-    if (cachedResults === null) {
-      return;
-    } else if (cachedResults !== undefined) {
-      setResults(cachedResults);
-      return;
-    }
-
-    mentionsCache.set(mentionString, null);
-    mentionData(mentionString).then(results => {
-      mentionsCache.set(mentionString, results);
-      setResults(results);
-    });
-  }, [mentionString]);
-  return results;
-}
-
-function checkForCapitalizedNameMentions(text, minMatchLength) {
-  var match = CapitalizedNameMentionsRegex.exec(text);
-
-  if (match !== null) {
-    // The strategy ignores leading whitespace but we need to know it's
-    // length to add it to the leadOffset
-    var maybeLeadingWhitespace = match[1];
-    var matchingString = match[2];
-
-    if (matchingString != null && matchingString.length >= minMatchLength) {
-      return {
-        leadOffset: match.index + maybeLeadingWhitespace.length,
-        matchingString,
-        replaceableString: matchingString
-      };
-    }
-  }
-
-  return null;
-}
-
-function checkForAtSignMentions(text, minMatchLength) {
-  var match = AtSignMentionsRegex.exec(text);
-
-  if (match === null) {
-    match = AtSignMentionsRegexAliasRegex.exec(text);
-  }
-
-  if (match !== null) {
-    // The strategy ignores leading whitespace but we need to know it's
-    // length to add it to the leadOffset
-    var maybeLeadingWhitespace = match[1];
-    var matchingString = match[3];
-
-    if (matchingString.length >= minMatchLength) {
-      return {
-        leadOffset: match.index + maybeLeadingWhitespace.length,
-        matchingString,
-        replaceableString: match[2]
-      };
-    }
-  }
-
-  return null;
-}
-
-function getPossibleQueryMatch(text) {
-  var match = checkForAtSignMentions(text, 1);
-  return match === null ? checkForCapitalizedNameMentions(text, 3) : match;
-}
-
-class MentionTypeaheadOption extends LexicalTypeaheadMenuPlugin.TypeaheadOption {
-  constructor(name, picture, url) {
-    super(name);
-    this.name = name;
-    this.picture = picture;
-    this.url = url;
-  }
-
-}
-
-function MentionsTypeaheadMenuItem(_ref) {
-  var {
-    index,
-    isSelected,
-    onClick,
-    onMouseEnter,
-    option
-  } = _ref;
-  var className = 'item';
-
-  if (isSelected) {
-    className += ' selected';
-  }
-
-  return /*#__PURE__*/React.createElement("li", {
-    key: option.key,
-    tabIndex: -1,
-    className: className,
-    ref: option.setRefElement,
-    role: "option",
-    "aria-selected": isSelected,
-    id: 'typeahead-item-' + index,
-    onMouseEnter: onMouseEnter,
-    onClick: onClick
-  }, option.picture, /*#__PURE__*/React.createElement("span", {
-    className: "verbum-text"
-  }, option.name));
-}
-
-function MentionsPlugin(props) {
-  var {
-    searchData,
-    getTypeaheadValues
-  } = props;
-  var [editor] = LexicalComposerContext.useLexicalComposerContext();
-  var [queryString, setQueryString] = React.useState(null);
-  var results = useMentionLookupService(queryString, searchData);
-  var checkForSlashTriggerMatch = LexicalTypeaheadMenuPlugin.useBasicTypeaheadTriggerMatch('/', {
-    minLength: 0
-  });
-  var options = React.useMemo(() => results.map(result => new MentionTypeaheadOption(getTypeaheadValues(result).value, getTypeaheadValues(result).picture, getTypeaheadValues(result).url)).slice(0, SUGGESTION_LIST_LENGTH_LIMIT), [results]);
-  var onSelectOption = React.useCallback((selectedOption, nodeToReplace, closeMenu) => {
-    editor.update(() => {
-      if (nodeToReplace) {
-        var mentionNode = $createMentionNode("@" + selectedOption.name);
-        var linkNode = link.$createAutoLinkNode(selectedOption.url);
-        linkNode.append(mentionNode);
-        nodeToReplace.replace(linkNode);
-        linkNode.select();
-      }
-
-      closeMenu();
-    });
-  }, [editor]);
-  var checkForMentionMatch = React.useCallback(text => {
-    var mentionMatch = getPossibleQueryMatch(text);
-    var slashMatch = checkForSlashTriggerMatch(text, editor);
-    return !slashMatch && mentionMatch ? mentionMatch : null;
-  }, [checkForSlashTriggerMatch, editor]);
-  return /*#__PURE__*/React.createElement(LexicalTypeaheadMenuPlugin.LexicalTypeaheadMenuPlugin, {
-    onQueryChange: setQueryString,
-    onSelectOption: onSelectOption,
-    triggerFn: checkForMentionMatch,
-    options: options,
-    menuRenderFn: (anchorElementRef, _ref2) => {
-      var {
-        selectedIndex,
-        selectOptionAndCleanUp,
-        setHighlightedIndex
-      } = _ref2;
-      return anchorElementRef && results.length ? /*#__PURE__*/ReactDOM.createPortal( /*#__PURE__*/React.createElement("div", {
-        className: "verbum-typeahead-popover verbum-mentions-menu"
-      }, /*#__PURE__*/React.createElement("ul", null, options.map((option, i) => /*#__PURE__*/React.createElement(MentionsTypeaheadMenuItem, {
-        index: i,
-        isSelected: selectedIndex === i,
-        onClick: () => {
-          setHighlightedIndex(i);
-          selectOptionAndCleanUp(option);
-        },
-        onMouseEnter: () => {
-          setHighlightedIndex(i);
-        },
-        key: option.key,
-        option: option
-      })))), anchorElementRef.current) : null;
-    }
-  });
-}
-
-var _excluded = ["color", "children", "onChange"];
-var basicColors = ['#d0021b', '#f5a623', '#f8e71c', '#8b572a', '#7ed321', '#417505', '#bd10e0', '#9013fe', '#4a90e2', '#50e3c2', '#b8e986', '#000000', '#4a4a4a', '#9b9b9b', '#ffffff'];
-var WIDTH = 214;
-var HEIGHT = 150;
-function ColorPicker(_ref) {
-  var {
-    color,
-    children,
-    onChange
-  } = _ref,
-      rest = _objectWithoutPropertiesLoose(_ref, _excluded);
-
-  var [selfColor, setSelfColor] = React.useState(transformColor('hex', color));
-  var saturationPosition = React.useMemo(() => ({
-    x: selfColor.hsv.s / 100 * WIDTH,
-    y: (100 - selfColor.hsv.v) / 100 * HEIGHT
-  }), [selfColor.hsv.s, selfColor.hsv.v]);
-  var huePosition = React.useMemo(() => ({
-    x: selfColor.hsv.h / 360 * WIDTH
-  }), [selfColor.hsv]);
-
-  var onMoveSaturation = _ref2 => {
-    var {
-      x,
-      y
-    } = _ref2;
-
-    var newHsv = _extends({}, selfColor.hsv, {
-      s: x / WIDTH * 100,
-      v: 100 - y / HEIGHT * 100
-    });
-
-    var newColor = transformColor('hsv', newHsv);
-    setSelfColor(newColor);
-  };
-
-  var onMoveHue = _ref3 => {
-    var {
-      x
-    } = _ref3;
-
-    var newHsv = _extends({}, selfColor.hsv, {
-      h: x / WIDTH * 360
-    });
-
-    var newColor = transformColor('hsv', newHsv);
-    setSelfColor(newColor);
-  };
-
-  React.useEffect(() => {
-    onChange(selfColor.hex);
-  }, [selfColor, onChange]);
-  React.useEffect(() => {
-    if (color === undefined) return;
-    setSelfColor(transformColor('hex', color));
-  }, [color]);
-  return /*#__PURE__*/React.createElement(DropDown, Object.assign({}, rest, {
-    stopCloseOnClickSelf: true
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "verbum-color-picker-wrapper",
-    style: {
-      width: WIDTH
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "verbum-color-picker-basic-color"
-  }, basicColors.map(basicColor => /*#__PURE__*/React.createElement("button", {
-    className: basicColor === selfColor.hex ? ' active' : '',
-    key: basicColor,
-    style: {
-      backgroundColor: basicColor
-    },
-    onClick: () => setSelfColor(transformColor('hex', basicColor)),
-    type: "button"
-  }))), /*#__PURE__*/React.createElement(MoveWrapper, {
-    className: "verbum-color-picker-saturation",
-    style: {
-      backgroundColor: "hsl(" + selfColor.hsv.h + ", 100%, 50%)"
-    },
-    onChange: onMoveSaturation
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "verbum-color-picker-saturation_cursor",
-    style: {
-      backgroundColor: selfColor.hex,
-      left: saturationPosition.x,
-      top: saturationPosition.y
-    }
-  })), /*#__PURE__*/React.createElement(MoveWrapper, {
-    className: "verbum-color-picker-hue",
-    onChange: onMoveHue
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "verbum-color-picker-hue_cursor",
-    style: {
-      backgroundColor: "hsl(" + selfColor.hsv.h + ", 100%, 50%)",
-      left: huePosition.x
-    }
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "verbum-color-picker-info"
-  }, /*#__PURE__*/React.createElement("span", null, selfColor.hex), /*#__PURE__*/React.createElement("div", {
-    className: "verbum-color-picker-color",
-    style: {
-      backgroundColor: selfColor.hex
-    }
-  }))), children);
-}
-
-function MoveWrapper(_ref4) {
-  var {
-    className,
-    style,
-    onChange,
-    children
-  } = _ref4;
-  var divRef = React.useRef(null);
-
-  var move = e => {
-    if (divRef.current) {
-      var {
-        current: div
-      } = divRef;
-      var {
-        width,
-        height,
-        left,
-        top
-      } = div.getBoundingClientRect();
-      var x = clamp(e.clientX - left, width, 0);
-      var y = clamp(e.clientY - top, height, 0);
-      onChange({
-        x,
-        y
-      });
-    }
-  };
-
-  var onMouseDown = e => {
-    if (e.button !== 0) return;
-    move(e);
-
-    var onMouseMove = _e => {
-      move(_e);
-    };
-
-    var onMouseUp = _e => {
-      document.removeEventListener('mousemove', onMouseMove, false);
-      document.removeEventListener('mouseup', onMouseUp, false);
-      move(_e);
-    };
-
-    document.addEventListener('mousemove', onMouseMove, false);
-    document.addEventListener('mouseup', onMouseUp, false);
-  };
-
-  return /*#__PURE__*/React.createElement("div", {
-    ref: divRef,
-    className: className,
-    style: style,
-    onMouseDown: onMouseDown
-  }, children);
-}
-
-function clamp(value, max, min) {
-  return value > max ? max : value < min ? min : value;
-}
-
-function toHex(value) {
-  if (!value.startsWith('#')) {
-    var ctx = document.createElement('canvas').getContext('2d');
-
-    if (!ctx) {
-      throw new Error('2d context not supported or canvas already initialized');
-    }
-
-    ctx.fillStyle = value;
-    return ctx.fillStyle;
-  } else if (value.length === 4 || value.length === 5) {
-    value = value.split('').map((v, i) => i ? v + v : '#').join('');
-    return value;
-  } else if (value.length === 7 || value.length === 9) {
-    return value;
-  }
-
-  return '#000000';
-}
-
-function hex2rgb(hex) {
-  var rbgArr = hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, (m, r, g, b) => '#' + r + r + g + g + b + b).substring(1).match(/.{2}/g).map(x => parseInt(x, 16));
-  return {
-    b: rbgArr[2],
-    g: rbgArr[1],
-    r: rbgArr[0]
-  };
-}
-
-function rgb2hsv(_ref5) {
-  var {
-    r,
-    g,
-    b
-  } = _ref5;
-  r /= 255;
-  g /= 255;
-  b /= 255;
-  var max = Math.max(r, g, b);
-  var d = max - Math.min(r, g, b);
-  var h = d ? (max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? 2 + (b - r) / d : 4 + (r - g) / d) * 60 : 0;
-  var s = max ? d / max * 100 : 0;
-  var v = max * 100;
-  return {
-    h,
-    s,
-    v
-  };
-}
-
-function hsv2rgb(_ref6) {
-  var {
-    h,
-    s,
-    v
-  } = _ref6;
-  s /= 100;
-  v /= 100;
-  var i = ~~(h / 60);
-  var f = h / 60 - i;
-  var p = v * (1 - s);
-  var q = v * (1 - s * f);
-  var t = v * (1 - s * (1 - f));
-  var index = i % 6;
-  var r = Math.round([v, q, p, p, t, v][index] * 255);
-  var g = Math.round([t, v, v, q, p, p][index] * 255);
-  var b = Math.round([p, p, t, v, v, q][index] * 255);
-  return {
-    b,
-    g,
-    r
-  };
-}
-
-function rgb2hex(_ref7) {
-  var {
-    b,
-    g,
-    r
-  } = _ref7;
-  return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
-}
-
-function transformColor(format, color) {
-  var hex = toHex('#121212');
-  var rgb = hex2rgb(hex);
-  var hsv = rgb2hsv(rgb);
-
-  if (format === 'hex') {
-    var value = color;
-    hex = toHex(value);
-    rgb = hex2rgb(hex);
-    hsv = rgb2hsv(rgb);
-  } else if (format === 'rgb') {
-    var _value = color;
-    rgb = _value;
-    hex = rgb2hex(rgb);
-    hsv = rgb2hsv(rgb);
-  } else if (format === 'hsv') {
-    var _value2 = color;
-    hsv = _value2;
-    rgb = hsv2rgb(hsv);
-    hex = rgb2hex(rgb);
-  }
-
-  return {
-    hex,
-    hsv,
-    rgb
-  };
-}
-
-var BackgroundColorPicker = () => {
-  var {
-    bgColor,
-    applyStyleText
-  } = React.useContext(ToolbarContext);
-  var {
-    t
-  } = reactI18next.useTranslation('toolbar');
-  var onBgColorSelect = React.useCallback(value => {
-    applyStyleText({
-      'background-color': value
-    });
-  }, [applyStyleText]);
-  return /*#__PURE__*/React__default.createElement(ColorPicker, {
-    buttonClassName: "verbum-toolbar-item verbum-color-picker",
-    buttonAriaLabel: t('toolbar:backgroundColorPicker.Description'),
-    buttonIconClassName: "verbum-icon verbum-bg-color",
-    color: bgColor,
-    onChange: onBgColorSelect,
-    title: "bg color"
-  });
-};
-
-var BoldButton = () => {
-  var {
-    activeEditor
-  } = React.useContext(EditorContext);
-  var {
-    isBold
-  } = React.useContext(ToolbarContext);
-  var {
-    t
-  } = reactI18next.useTranslation('toolbar');
-  return /*#__PURE__*/React__default.createElement("button", {
-    onClick: () => {
-      activeEditor.dispatchCommand(lexical.FORMAT_TEXT_COMMAND, 'bold');
-    },
-    className: 'verbum-toolbar-item spaced ' + (isBold ? 'active' : ''),
-    title: IS_APPLE ? t('toolbar:boldButton.Title') + " (\u2318B)" : t('toolbar:boldButton.Title') + " (Ctrl + B)",
-    "aria-label": t('toolbar:boldButton.Description') + " " + (IS_APPLE ? '⌘B' : 'Ctrl+B'),
-    type: "button"
-  }, /*#__PURE__*/React__default.createElement("i", {
-    className: "verbum-format verbum-bold"
-  }));
-};
-
-var CodeFormatButton = () => {
-  var {
-    activeEditor
-  } = React.useContext(EditorContext);
-  var {
-    isCode
-  } = React.useContext(ToolbarContext);
-  var {
-    t
-  } = reactI18next.useTranslation('toolbar');
-  return /*#__PURE__*/React__default.createElement("button", {
-    onClick: () => {
-      activeEditor.dispatchCommand(lexical.FORMAT_TEXT_COMMAND, 'code');
-    },
-    className: 'verbum-toolbar-item spaced ' + (isCode ? 'active' : ''),
-    title: t('toolbar:codeFormatButton.Description'),
-    "aria-label": t('toolbar:codeFormatButton.Description'),
-    type: "button"
-  }, /*#__PURE__*/React__default.createElement("i", {
-    className: "verbum-format verbum-code"
-  }));
-};
-
-var PREVIEW_CACHE = {};
-var URL_MATCHER$1 = /((https?:\/\/(www\.)?)|(www\.))[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
-
-function useSuspenseRequest(url) {
-  var cached = PREVIEW_CACHE[url];
-
-  if (!url.match(URL_MATCHER$1)) {
-    return {
-      preview: null
-    };
-  }
-
-  if (!cached) {
-    cached = PREVIEW_CACHE[url] = fetch("/api/link-preview?url=" + encodeURI(url)).then(response => response.json()).then(preview => {
-      PREVIEW_CACHE[url] = preview;
-      return preview;
-    }).catch(() => {
-      PREVIEW_CACHE[url] = {
-        preview: null
-      };
-    });
-  }
-
-  if (cached instanceof Promise) {
-    throw cached;
-  }
-
-  return cached;
-}
-
-function LinkPreviewContent(_ref) {
-  var {
-    url
-  } = _ref;
-  var {
-    preview
-  } = useSuspenseRequest(url);
-
-  if (preview === null) {
-    return null;
-  }
-
-  return /*#__PURE__*/React.createElement("div", {
-    className: "LinkPreview__container"
-  }, preview.img && /*#__PURE__*/React.createElement("div", {
-    className: "LinkPreview__imageWrapper"
-  }, /*#__PURE__*/React.createElement("img", {
-    src: preview.img,
-    alt: preview.title,
-    className: "LinkPreview__image"
-  })), preview.domain && /*#__PURE__*/React.createElement("div", {
-    className: "LinkPreview__domain"
-  }, preview.domain), preview.title && /*#__PURE__*/React.createElement("div", {
-    className: "LinkPreview__title"
-  }, preview.title), preview.description && /*#__PURE__*/React.createElement("div", {
-    className: "LinkPreview__description"
-  }, preview.description));
-}
-
-function Glimmer(props) {
-  return /*#__PURE__*/React.createElement("div", Object.assign({
-    className: "LinkPreview__glimmer"
-  }, props, {
-    style: _extends({
-      animationDelay: (props.index || 0) * 300
-    }, props.style || {})
-  }));
-}
-
-function LinkPreview(_ref2) {
-  var {
-    url
-  } = _ref2;
-  return /*#__PURE__*/React.createElement(React.Suspense, {
-    fallback: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Glimmer, {
-      style: {
-        height: '80px'
-      },
-      index: 0
-    }), /*#__PURE__*/React.createElement(Glimmer, {
-      style: {
-        width: '60%'
-      },
-      index: 1
-    }), /*#__PURE__*/React.createElement(Glimmer, {
-      style: {
-        width: '80%'
-      },
-      index: 2
-    }))
-  }, /*#__PURE__*/React.createElement(LinkPreviewContent, {
-    url: url
-  }));
-}
-
-function positionEditorElement(editor, rect) {
-  if (rect === null) {
-    editor.style.opacity = '0';
-    editor.style.top = '-1000px';
-    editor.style.left = '-1000px';
-  } else {
-    editor.style.opacity = '1';
-    editor.style.top = rect.top + rect.height + window.pageYOffset + 10 + "px";
-    editor.style.left = rect.left + window.pageXOffset - editor.offsetWidth / 2 + rect.width / 2 + "px";
-  }
-}
-
-function FloatingLinkEditor(_ref) {
-  var {
-    editor
-  } = _ref;
-  var editorRef = React.useRef(null);
-  var inputRef = React.useRef(null);
-  var [linkUrl, setLinkUrl] = React.useState('');
-  var [isEditMode, setEditMode] = React.useState(false);
-  var [lastSelection, setLastSelection] = React.useState(null);
-  var updateLinkEditor = React.useCallback(() => {
-    var selection = lexical.$getSelection();
-
-    if (lexical.$isRangeSelection(selection)) {
-      var node = getSelectedNode$1(selection);
-      var parent = node.getParent();
-
-      if (link.$isLinkNode(parent)) {
-        setLinkUrl(parent.getURL());
-      } else if (link.$isLinkNode(node)) {
-        setLinkUrl(node.getURL());
-      } else {
-        setLinkUrl('');
-      }
-    }
-
-    var editorElem = editorRef.current;
-    var nativeSelection = window.getSelection();
-    var activeElement = document.activeElement;
-
-    if (editorElem === null) {
-      return;
-    }
-
-    var rootElement = editor.getRootElement();
-
-    if (selection !== null && !nativeSelection.isCollapsed && rootElement !== null && rootElement.contains(nativeSelection.anchorNode)) {
-      var domRange = nativeSelection.getRangeAt(0);
-      var rect;
-
-      if (nativeSelection.anchorNode === rootElement) {
-        var inner = rootElement;
-
-        while (inner.firstElementChild != null) {
-          inner = inner.firstElementChild;
-        }
-
-        rect = inner.getBoundingClientRect();
-      } else {
-        rect = domRange.getBoundingClientRect();
-      }
-
-      positionEditorElement(editorElem, rect);
-      setLastSelection(selection);
-    } else if (!activeElement || activeElement.className !== 'link-input') {
-      positionEditorElement(editorElem, null);
-      setLastSelection(null);
-      setEditMode(false);
-      setLinkUrl('');
-    }
-
-    return true;
-  }, [editor]);
-  React.useEffect(() => {
-    var onResize = () => {
-      editor.getEditorState().read(() => {
-        updateLinkEditor();
-      });
-    };
-
-    window.addEventListener('resize', onResize);
-    return () => {
-      window.removeEventListener('resize', onResize);
-    };
-  }, [editor, updateLinkEditor]);
-  React.useEffect(() => {
-    return utils.mergeRegister(editor.registerUpdateListener(_ref2 => {
-      var {
-        editorState
-      } = _ref2;
-      editorState.read(() => {
-        updateLinkEditor();
-      });
-    }), editor.registerCommand(lexical.SELECTION_CHANGE_COMMAND, () => {
-      updateLinkEditor();
-      return true;
-    }, lexical.COMMAND_PRIORITY_LOW));
-  }, [editor, updateLinkEditor]);
-  React.useEffect(() => {
-    editor.getEditorState().read(() => {
-      updateLinkEditor();
-    });
-  }, [editor, updateLinkEditor]);
-  React.useEffect(() => {
-    if (isEditMode && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isEditMode]);
-  return /*#__PURE__*/React__default.createElement("div", {
-    ref: editorRef,
-    className: "verbum-link-editor"
-  }, isEditMode ? /*#__PURE__*/React__default.createElement("input", {
-    ref: inputRef,
-    className: "link-input",
-    value: linkUrl,
-    onChange: event => {
-      setLinkUrl(event.target.value);
-    },
-    onKeyDown: event => {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-
-        if (lastSelection !== null) {
-          if (linkUrl !== '') {
-            editor.dispatchCommand(link.TOGGLE_LINK_COMMAND, linkUrl);
-          }
-
-          setEditMode(false);
-        }
-      } else if (event.key === 'Escape') {
-        event.preventDefault();
-        setEditMode(false);
-      }
-    }
-  }) : /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement("div", {
-    className: "link-input"
-  }, /*#__PURE__*/React__default.createElement("a", {
-    href: linkUrl,
-    target: "_blank",
-    rel: "noopener noreferrer"
-  }, linkUrl), /*#__PURE__*/React__default.createElement("div", {
-    className: "link-edit",
-    role: "button",
-    tabIndex: 0,
-    onMouseDown: event => event.preventDefault(),
-    onClick: () => {
-      setEditMode(true);
-    }
-  })), /*#__PURE__*/React__default.createElement(LinkPreview, {
-    url: linkUrl
-  })));
-}
-
-var defaultFontFamilyOptions = [['Arial', 'Arial'], ['Courier New', 'Courier New'], ['Georgia', 'Georgia'], ['Times New Roman', 'Times New Roman'], ['Trebuchet MS', 'Trebuchet MS'], ['Verdana', 'Verdana']];
-
-var FontFamilyDropdown = _ref => {
-  var {
-    fontOptions = defaultFontFamilyOptions
-  } = _ref;
-  var {
-    fontFamily,
-    applyStyleText
-  } = React.useContext(ToolbarContext);
-  var onFontFamilySelect = React.useCallback(e => {
-    applyStyleText({
-      'font-family': e.target.value
-    });
-  }, [applyStyleText]);
-  return /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement(Select, {
-    className: "verbum-toolbar-item verbum-font-family",
-    onChange: onFontFamilySelect,
-    options: fontOptions,
-    value: fontFamily
-  }), /*#__PURE__*/React__default.createElement("i", {
-    className: "verbum-chevron-down inside"
-  }));
-};
-
-var defaultFontSizeOptions = [['10px', '10px'], ['11px', '11px'], ['12px', '12px'], ['13px', '13px'], ['14px', '14px'], ['15px', '15px'], ['16px', '16px'], ['17px', '17px'], ['18px', '18px'], ['19px', '19px'], ['20px', '20px']];
-
-var FontSizeDropdown = _ref => {
-  var {
-    fontSizeOptions = defaultFontSizeOptions
-  } = _ref;
-  var {
-    fontSize,
-    applyStyleText
-  } = React.useContext(ToolbarContext);
-  var onFontSizeSelect = React.useCallback(e => {
-    applyStyleText({
-      'font-size': e.target.value
-    });
-  }, [applyStyleText]);
-  return /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement(Select, {
-    className: "verbum-toolbar-item verbum-font-size",
-    onChange: onFontSizeSelect,
-    options: fontSizeOptions,
-    value: fontSize
-  }), /*#__PURE__*/React__default.createElement("i", {
-    className: "verbum-chevron-down inside"
-  }));
 };
 
 var InsertLinkButton = () => {

@@ -1886,7 +1886,6 @@ button.verbum-action-button:disabled {
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
   border-radius: 8px;
   transition: opacity 0.5s;
-  height: 44px;
 }
 
 .verbum-character-style-popup button.verbum-popup-item {
@@ -2625,19 +2624,6 @@ i.send {
  *
  *
  */
-
-.TableCellResizer__resizer {
-  position: absolute;
-}
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- *
- */
 .ToolbarPlugin__dialogActions {
   display: flex;
   flex-direction: row;
@@ -2913,4 +2899,17 @@ i.send {
   animation-iteration-count: infinite;
   animation-timing-function: linear;
   animation-name: glimmer-animation;
+}
+
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ *
+ */
+
+.TableCellResizer__resizer {
+  position: absolute;
 }
