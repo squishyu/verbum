@@ -6837,6 +6837,7 @@ exports.MentionsPlugin = MentionsPlugin;
 exports.PollNode = PollNode;
 exports.TextColorPicker = TextColorPicker;
 exports.TextFormatDropdown = TextFormatDropdown;
+exports.ToolbarContext = ToolbarContext;
 exports.ToolbarPlugin = ToolbarPlugin;
 exports.ToolbarTypes = index;
 exports.TypeaheadNode = TypeaheadNode;

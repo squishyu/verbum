@@ -7,6 +7,7 @@ import { AlignDropdown, BackgroundColorPicker, BoldButton, CodeFormatButton, Flo
 import * as ToolbarTypes from './types';
 import Divider from './ui/Divider';
 import EditorContext from './context/EditorContext';
+import ToolbarContext from './context/ToolbarContext';
 export * from "./plugins/ImagesPlugin";
 export * from "./nodes";
-export { EditorComposer, EditorContext, Editor, ToolbarPlugin, AlignDropdown, BackgroundColorPicker, BoldButton, CodeFormatButton, FloatingLinkEditor, FontFamilyDropdown, FontSizeDropdown, ImagesPlugin, InsertDropdown, InsertLinkButton, ItalicButton, TextColorPicker, TextFormatDropdown, UnderlineButton, ToolbarTypes, Divider, MentionsPlugin, };
+export { EditorComposer, EditorContext, Editor, ToolbarPlugin, AlignDropdown, BackgroundColorPicker, BoldButton, CodeFormatButton, FloatingLinkEditor, FontFamilyDropdown, FontSizeDropdown, ImagesPlugin, InsertDropdown, InsertLinkButton, ItalicButton, TextColorPicker, TextFormatDropdown, UnderlineButton, ToolbarContext, ToolbarTypes, Divider, MentionsPlugin, };
