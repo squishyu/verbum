@@ -23,6 +23,7 @@ import {
 import * as ToolbarTypes from './types';
 import Divider from './ui/Divider';
 import EditorContext from './context/EditorContext';
+import ToolbarContext from './context/ToolbarContext';
 
 export * from "./plugins/ImagesPlugin"
 export * from "./nodes"
@@ -46,6 +47,7 @@ export {
     TextColorPicker,
     TextFormatDropdown,
     UnderlineButton,
+    ToolbarContext,
     ToolbarTypes,
     Divider,
     MentionsPlugin,
