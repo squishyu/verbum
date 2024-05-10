@@ -61,6 +61,7 @@ type ToolbarProps = {
     defaultBgColor?: string /** The default selected background color in the toolbar */
     defaultFontFamily?: string /** The default selected font family in the toolbar */
     disableBlockTypeSelect?: boolean
+    disableUndoRedo?: boolean
 }
 
 const ToolbarPlugin = ({
@@ -69,7 +70,8 @@ const ToolbarPlugin = ({
                            defaultFontColor = '#000',
                            defaultBgColor = '#fff',
                            defaultFontFamily = 'Arial',
-                           disableBlockTypeSelect
+                           disableBlockTypeSelect,
+                           disableUndoRedo
                        }: ToolbarProps) => {
     const [alignExists, AlignComponent] = useChild(children, AlignDropdown);
 
@@ -273,9 +275,11 @@ const ToolbarPlugin = ({
         }}
     >
         <div className="verbum-toolbar">
-            <UndoButton/>
-            <RedoButton/>
-            <Divider/>
+            {!disableUndoRedo && <>
+                <UndoButton/>
+                <RedoButton/>
+                <Divider/>
+            </>}
             {!disableBlockTypeSelect && supportedBlockTypes.has(blockType) && activeEditor === initialEditor && <>
                 <BlockFormatDropdown/>
                 <Divider/>
