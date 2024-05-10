@@ -4513,7 +4513,8 @@ var ToolbarPlugin = _ref => {
     defaultFontColor = '#000',
     defaultBgColor = '#fff',
     defaultFontFamily = 'Arial',
-    disableBlockTypeSelect
+    disableBlockTypeSelect,
+    disableUndoRedo
   } = _ref;
   var [alignExists, AlignComponent] = useChild(children, AlignDropdown);
   var {
@@ -4679,7 +4680,7 @@ var ToolbarPlugin = _ref => {
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "verbum-toolbar"
-  }, /*#__PURE__*/React.createElement(UndoButton, null), /*#__PURE__*/React.createElement(RedoButton, null), /*#__PURE__*/React.createElement(Divider$1, null), !disableBlockTypeSelect && supportedBlockTypes.has(blockType) && activeEditor === initialEditor && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(BlockFormatDropdown, null), /*#__PURE__*/React.createElement(Divider$1, null)), blockType === 'code' ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(CodeLanguageDropdown, null), /*#__PURE__*/React.createElement(Divider$1, null), alignExists && AlignComponent) : /*#__PURE__*/React.createElement(React.Fragment, null, children)));
+  }, !disableUndoRedo && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(UndoButton, null), /*#__PURE__*/React.createElement(RedoButton, null), /*#__PURE__*/React.createElement(Divider$1, null)), !disableBlockTypeSelect && supportedBlockTypes.has(blockType) && activeEditor === initialEditor && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(BlockFormatDropdown, null), /*#__PURE__*/React.createElement(Divider$1, null)), blockType === 'code' ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(CodeLanguageDropdown, null), /*#__PURE__*/React.createElement(Divider$1, null), alignExists && AlignComponent) : /*#__PURE__*/React.createElement(React.Fragment, null, children)));
 };
 
 var PUNCTUATION = '\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\-\\[\\]\\\\/!%\'"~=<>_:;';

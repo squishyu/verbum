@@ -14,6 +14,7 @@ declare type ToolbarProps = {
     defaultBgColor?: string; /** The default selected background color in the toolbar */
     defaultFontFamily?: string; /** The default selected font family in the toolbar */
     disableBlockTypeSelect?: boolean;
+    disableUndoRedo?: boolean;
 };
-declare const ToolbarPlugin: ({ children, defaultFontSize, defaultFontColor, defaultBgColor, defaultFontFamily, disableBlockTypeSelect }: ToolbarProps) => JSX.Element;
+declare const ToolbarPlugin: ({ children, defaultFontSize, defaultFontColor, defaultBgColor, defaultFontFamily, disableBlockTypeSelect, disableUndoRedo }: ToolbarProps) => JSX.Element;
 export default ToolbarPlugin;

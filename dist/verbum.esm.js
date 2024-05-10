@@ -4575,7 +4575,8 @@ var ToolbarPlugin = _ref => {
     defaultFontColor = '#000',
     defaultBgColor = '#fff',
     defaultFontFamily = 'Arial',
-    disableBlockTypeSelect
+    disableBlockTypeSelect,
+    disableUndoRedo
   } = _ref;
   var [alignExists, AlignComponent] = useChild(children, AlignDropdown);
   var {
@@ -4741,7 +4742,7 @@ var ToolbarPlugin = _ref => {
     }
   }, /*#__PURE__*/createElement("div", {
     className: "verbum-toolbar"
-  }, /*#__PURE__*/createElement(UndoButton, null), /*#__PURE__*/createElement(RedoButton, null), /*#__PURE__*/createElement(Divider$1, null), !disableBlockTypeSelect && supportedBlockTypes.has(blockType) && activeEditor === initialEditor && /*#__PURE__*/createElement(Fragment, null, /*#__PURE__*/createElement(BlockFormatDropdown, null), /*#__PURE__*/createElement(Divider$1, null)), blockType === 'code' ? /*#__PURE__*/createElement(Fragment, null, /*#__PURE__*/createElement(CodeLanguageDropdown, null), /*#__PURE__*/createElement(Divider$1, null), alignExists && AlignComponent) : /*#__PURE__*/createElement(Fragment, null, children)));
+  }, !disableUndoRedo && /*#__PURE__*/createElement(Fragment, null, /*#__PURE__*/createElement(UndoButton, null), /*#__PURE__*/createElement(RedoButton, null), /*#__PURE__*/createElement(Divider$1, null)), !disableBlockTypeSelect && supportedBlockTypes.has(blockType) && activeEditor === initialEditor && /*#__PURE__*/createElement(Fragment, null, /*#__PURE__*/createElement(BlockFormatDropdown, null), /*#__PURE__*/createElement(Divider$1, null)), blockType === 'code' ? /*#__PURE__*/createElement(Fragment, null, /*#__PURE__*/createElement(CodeLanguageDropdown, null), /*#__PURE__*/createElement(Divider$1, null), alignExists && AlignComponent) : /*#__PURE__*/createElement(Fragment, null, children)));
 };
 
 var css_248z$e = ".verbum-dropdown .verbum-item .verbum-icon {\n  display: flex;\n  width: 20px;\n  height: 20px;\n  user-select: none;\n  margin-right: 12px;\n  line-height: 16px;\n  background-size: contain;\n  background-position: center;\n  background-repeat: no-repeat;\n}\n\n.verbum-mentions-menu {\n  width: 10rem;\n}\n\n.verbum-mention:focus {\n  box-shadow: rgb(180 213 255) 0px 0px 0px 2px;\n  outline: none;\n}\n\n.verbum-typeahead-popover {\n  background: #fff;\n  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);\n  border-radius: 8px;\n  margin-top: 1.25rem;\n}\n\n.verbum-typeahead-popover ul {\n  padding: 0;\n  list-style: none;\n  margin: 0;\n  border-radius: 8px;\n  max-height: 200px;\n  overflow-y: scroll;\n}\n\n.verbum-typeahead-popover ul::-webkit-scrollbar {\n  display: none;\n}\n\n.verbum-typeahead-popover ul {\n  -ms-overflow-style: none;\n  scrollbar-width: none;\n}\n\n.verbum-typeahead-popover ul li {\n  margin: 0;\n  min-width: 180px;\n  font-size: 14px;\n  outline: none;\n  cursor: pointer;\n  border-radius: 8px;\n}\n\n.verbum-typeahead-popover ul li.selected {\n  background: #eee;\n}\n\n.verbum-typeahead-popover li {\n  margin: 0 8px 0 8px;\n  padding: 8px;\n  color: #050505;\n  cursor: pointer;\n  line-height: 16px;\n  font-size: 15px;\n  display: flex;\n  align-content: center;\n  flex-direction: row;\n  flex-shrink: 0;\n  background-color: #fff;\n  border-radius: 8px;\n  border: 0;\n}\n\n.verbum-typeahead-popover li.active {\n  display: flex;\n  width: 20px;\n  height: 20px;\n  background-size: contain;\n}\n\n.verbum-typeahead-popover li:first-child {\n  border-radius: 8px 8px 0px 0px;\n}\n\n.verbum-typeahead-popover li:last-child {\n  border-radius: 0px 0px 8px 8px;\n}\n\n.verbum-typeahead-popover li:hover {\n  background-color: #eee;\n}\n\n.verbum-typeahead-popover li .verbum-text {\n  display: flex;\n  line-height: 20px;\n  flex-grow: 1;\n  min-width: 150px;\n}";
