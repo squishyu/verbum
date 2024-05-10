@@ -1673,7 +1673,6 @@ button.verbum-action-button:disabled {
   display: inline-block;
   height: 18px;
   width: 18px;
-  margin-top: 2px;
   vertical-align: -0.25em;
   display: flex;
   opacity: 0.6;
@@ -1912,7 +1911,6 @@ button.verbum-action-button:disabled {
   display: inline-block;
   height: 18px;
   width: 18px;
-  margin-top: 2px;
   vertical-align: -0.25em;
   display: flex;
   opacity: 0.6;
