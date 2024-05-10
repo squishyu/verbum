@@ -89,11 +89,12 @@
   background-color: rgba(88, 144, 255, 0.15);
   border-bottom: 1px solid rgba(88, 144, 255, 0.3);
 }
-.PlaygroundEditorTheme__link {
+.PlaygroundEditorTheme__link, .PlaygroundEditorTheme__link > span {
   color: rgb(33, 111, 219);
   text-decoration: none;
 }
-.PlaygroundEditorTheme__link:hover {
+
+.PlaygroundEditorTheme__link:hover, .PlaygroundEditorTheme__link > span:hover {
   text-decoration: underline;
 }
 .PlaygroundEditorTheme__code {
