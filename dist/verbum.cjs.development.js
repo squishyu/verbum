@@ -5468,7 +5468,7 @@ function FloatingLinkEditor(_ref) {
     target: "_blank",
     rel: "noopener noreferrer"
   }, linkUrl), /*#__PURE__*/React__default.createElement("div", {
-    className: "link-edit",
+    className: "verbum-link-edit",
     role: "button",
     tabIndex: 0,
     onMouseDown: event => event.preventDefault(),
