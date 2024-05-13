@@ -5440,7 +5440,7 @@ function FloatingLinkEditor(_ref) {
     className: "verbum-link-editor"
   }, isEditMode ? /*#__PURE__*/React__default.createElement("input", {
     ref: inputRef,
-    className: "link-input",
+    className: "verbum-link-input",
     value: linkUrl,
     onChange: event => {
       setLinkUrl(event.target.value);
@@ -5462,7 +5462,7 @@ function FloatingLinkEditor(_ref) {
       }
     }
   }) : /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement("div", {
-    className: "link-input"
+    className: "verbum-link-input"
   }, /*#__PURE__*/React__default.createElement("a", {
     href: linkUrl,
     target: "_blank",
