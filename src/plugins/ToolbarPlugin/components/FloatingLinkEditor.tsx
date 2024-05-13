@@ -169,7 +169,7 @@ function FloatingLinkEditor({
               {linkUrl}
             </a>
             <div
-              className="link-edit"
+              className="verbum-link-edit"
               role="button"
               tabIndex={0}
               onMouseDown={(event) => event.preventDefault()}
