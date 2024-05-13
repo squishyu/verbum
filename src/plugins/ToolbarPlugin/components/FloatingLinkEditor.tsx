@@ -137,52 +137,46 @@ function FloatingLinkEditor({
     }
   }, [isEditMode]);
 
-  return (
-    <div ref={editorRef} className="verbum-link-editor">
-      {isEditMode ? (
-        <input
-          ref={inputRef}
-          className="link-input"
-          value={linkUrl}
-          onChange={(event) => {
-            setLinkUrl(event.target.value);
-          }}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              event.preventDefault();
-              if (lastSelection !== null) {
-                if (linkUrl !== '') {
-                  editor.dispatchCommand(TOGGLE_LINK_COMMAND, linkUrl);
-                }
-                setEditMode(false);
-              }
-            } else if (event.key === 'Escape') {
-              event.preventDefault();
-              setEditMode(false);
+  return <div ref={editorRef} className="verbum-link-editor">
+    {isEditMode ? <input
+      ref={inputRef}
+      className="verbum-link-input"
+      value={linkUrl}
+      onChange={(event) => {
+        setLinkUrl(event.target.value);
+      }}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          if (lastSelection !== null) {
+            if (linkUrl !== '') {
+              editor.dispatchCommand(TOGGLE_LINK_COMMAND, linkUrl);
             }
+            setEditMode(false);
+          }
+        } else if (event.key === 'Escape') {
+          event.preventDefault();
+          setEditMode(false);
+        }
+      }}
+    /> : <>
+      <div className="verbum-link-input">
+        <a href={linkUrl} target="_blank" rel="noopener noreferrer">
+          {linkUrl}
+        </a>
+        <div
+          className="verbum-link-edit"
+          role="button"
+          tabIndex={0}
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => {
+            setEditMode(true);
           }}
         />
-      ) : (
-        <>
-          <div className="link-input">
-            <a href={linkUrl} target="_blank" rel="noopener noreferrer">
-              {linkUrl}
-            </a>
-            <div
-              className="verbum-link-edit"
-              role="button"
-              tabIndex={0}
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => {
-                setEditMode(true);
-              }}
-            />
-          </div>
-          <LinkPreview url={linkUrl} />
-        </>
-      )}
-    </div>
-  );
+      </div>
+      <LinkPreview url={linkUrl} />
+    </>}
+  </div>
 }
 
 export default FloatingLinkEditor;
